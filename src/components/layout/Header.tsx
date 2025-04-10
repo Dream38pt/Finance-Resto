@@ -4,10 +4,10 @@ import { useMenu } from '../../contexts/MenuContext';
 import styles from './Header.module.css';
 
 interface HeaderProps {
-  title?: string;
+  title?: string; 
 }
 
-export function Header({ title = 'Mon Application' }: HeaderProps) {
+export function Header({ title = 'Finance-Resto' }: HeaderProps) {
   const { isExpanded, toggleMenu } = useMenu();
 
   return (
