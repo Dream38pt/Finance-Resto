@@ -1,0 +1,22 @@
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.toggleGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.textMuted {
+  color: var(--color-text-light);
+  min-width: 200px;
+}
