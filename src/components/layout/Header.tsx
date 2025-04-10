@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Home, Info, Mail, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Menu, Home, Info, Settings, Mail, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import styles from './Header.module.css';
 
@@ -25,6 +25,10 @@ export function Header({ title = 'Finance-Resto' }: HeaderProps) {
           <a href="/about" className={styles.link}>
             <Info size={20} className={styles.icon} />
             <span className={styles.linkText}>À propos</span>
+          </a>
+          <a href="/settings" className={styles.link}>
+            <Settings size={20} className={styles.icon} />
+            <span className={styles.linkText}>Paramètres</span>
           </a>
           <a href="/contact" className={styles.link}>
             <Mail size={20} className={styles.icon} />
