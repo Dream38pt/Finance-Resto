@@ -9,8 +9,12 @@ import { Form, FormField, FormInput, FormActions } from '../components/ui/form';
 import { useToast } from '../contexts/ToastContext';
 import styles from './Home.module.css';
 import { theme } from '../theme';
+import { useLocation } from 'react-router-dom';
 
 function Home() {
+  const location = useLocation();
+  console.log('Page courante:', location.pathname);
+
   const [notifications, setNotifications] = React.useState(true);
   const [darkMode, setDarkMode] = React.useState(false);
   const [primary, setPrimary] = React.useState(false);

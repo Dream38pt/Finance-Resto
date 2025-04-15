@@ -1,0 +1,7 @@
+.content {
+  margin-left: var(--menu-width);
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: var(--color-background);
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

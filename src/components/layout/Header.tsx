@@ -1,39 +1,54 @@
 import React from 'react';
-import { Menu, Home, Info, Settings, Mail, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Menu, Home, Info, Settings, Mail, ChevronLeft, ChevronRight, Wallet } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './Header.module.css';
 
 interface HeaderProps {
   title?: string; 
 }
 
-export function Header({ title = 'Finance-Resto' }: HeaderProps) {
+export function Header({ title }: HeaderProps) {
   const { isExpanded, toggleMenu } = useMenu();
+  const location = useLocation();
+  
+  const getTitle = () => {
+    switch (location.pathname) {
+      case '/settings':
+        return 'Paramètrages';
+      default:
+        return 'Finance-Resto';
+    }
+  };
 
   return (
     <header className={`${styles.header} ${isExpanded ? styles.expanded : styles.collapsed}`}>
       <div className={styles.container}>
         <div className={styles.brand}>
           <Menu size={24} className={styles.icon} />
-          <h1 className={styles.title}>{title}</h1>
+          <h1 className={styles.title}>{title || getTitle()}</h1>
         </div>
         <nav className={styles.nav}>
-          <a href="/" className={styles.link}>
+          <Link to="/" className={styles.link}>
             <Home size={20} className={styles.icon} />
             <span className={styles.linkText}>Accueil</span>
-          </a>
-          <a href="/about" className={styles.link}>
+          </Link>
+          <Link to="/about" className={styles.link}>
             <Info size={20} className={styles.icon} />
             <span className={styles.linkText}>À propos</span>
-          </a>
-          <a href="/settings" className={styles.link}>
+          </Link>
+          <Link to="/settings" className={styles.link}>
             <Settings size={20} className={styles.icon} />
             <span className={styles.linkText}>Paramètres</span>
-          </a>
-          <a href="/contact" className={styles.link}>
+          </Link>
+          <Link to="/finance" className={styles.link}>
+            <Wallet size={20} className={styles.icon} />
+            <span className={styles.linkText}>Gestion Financière</span>
+          </Link>
+          <Link to="/contact" className={styles.link}>
             <Mail size={20} className={styles.icon} />
             <span className={styles.linkText}>Contact</span>
-          </a>
+          </Link>
         </nav>
         <button 
           className={styles.toggleButton}
