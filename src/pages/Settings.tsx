@@ -1,17 +1,12 @@
 import React from 'react';
-import { PageLayout, PageSection } from '../components/layout/page-layout';
-import { Form, FormField, FormInput, FormActions } from '../components/ui/form';
-import { Button } from '../components/ui/button';
-import { Toggle } from '../components/ui/toggle';
+import { Outlet } from 'react-router-dom';
+import { SettingsLayout } from '../components/layout/settings-layout/settings-layout';
 
 function Settings() {
   return (
-    <PageLayout>
-      <PageSection
-        title="Paramètres"
-        description="Gérez vos préférences et configurations."
-      />
-    </PageLayout>
+    <SettingsLayout>
+      <Outlet />
+    </SettingsLayout>
   );
 }
 
