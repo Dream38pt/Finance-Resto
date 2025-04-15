@@ -2,8 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Finance from './pages/Finance';
-import BudgetView from './pages/finance/BudgetView';
-import BudgetCF from './pages/finance/BudgetCF';
+import { BudgetView, BudgetCF, Invoice } from './pages/finance';
 import Login from './pages/Login';
 import Settings from './pages/Settings';
 import Budget from './pages/finance/Budget';
@@ -13,6 +12,8 @@ import Employees from './pages/settings/Employees';
 import Days from './pages/settings/Days';
 import TVA from './pages/settings/TVA';
 import ServiceTypes from './pages/settings/ServiceTypes';
+import PurchaseCategories from './pages/settings/PurchaseCategories';
+import Suppliers from './pages/settings/Suppliers';
 import { MenuProvider } from './contexts/MenuContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -37,6 +38,7 @@ function App() {
                 </ProtectedRoute>
               }>
                 <Route path="dashboard" element={<div>Tableau de bord</div>} />
+                <Route path="invoice" element={<Invoice />} />
                 <Route path="revenue" element={<div>Chiffre d'affaires</div>} />
                 <Route path="expenses" element={<div>Dépenses</div>} />
                 <Route path="costs" element={<div>Coûts</div>} />
@@ -56,6 +58,8 @@ function App() {
                 <Route path="employees" element={<Employees />} />
                 <Route path="tva" element={<TVA />} />
                 <Route path="service-types" element={<ServiceTypes />} />
+                <Route path="purchase-categories" element={<PurchaseCategories />} />
+                <Route path="suppliers" element={<Suppliers />} />
                 <Route path="days" element={<Days />} />
               </Route>
             </Routes>

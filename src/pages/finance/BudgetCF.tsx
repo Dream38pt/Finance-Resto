@@ -15,6 +15,7 @@ interface BudgetCF {
   designation: string;
   montant: number;
   ordre_affichage: number;
+  categorie_achat_id: string | null;
 }
 
 interface Entite {
@@ -23,9 +24,18 @@ interface Entite {
   libelle: string;
 }
 
+interface CategorieAchat {
+  id: string;
+  libelle: string;
+  fait_partie_cout_mp: boolean;
+  ordre_affichage: number;
+  actif: boolean;
+}
+
 function BudgetCF() {
   const [budgets, setBudgets] = useState<BudgetCF[]>([]);
   const [entites, setEntites] = useState<Entite[]>([]);
+  const [categories, setCategories] = useState<CategorieAchat[]>([]);
   const [selectedEntite, setSelectedEntite] = useState<string>('');
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [loading, setLoading] = useState(true);
@@ -35,6 +45,7 @@ function BudgetCF() {
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
     designation: '',
+    categorie_achat_id: '',
     ordre_affichage: '0',
     montants: Array(12).fill('0')
   });
@@ -56,10 +67,16 @@ function BudgetCF() {
     }
   };
 
-  const handleEdit = (budget: { designation: string; ordre_affichage: number; montants: number[] }) => {
+  const handleEdit = (budget: { 
+    designation: string; 
+    ordre_affichage: number; 
+    categorie_achat_id: string | null;
+    montants: number[] 
+  }) => {
     setEditingBudget(budget.designation);
     setFormData({
       designation: budget.designation,
+      categorie_achat_id: budget.categorie_achat_id || '',
       ordre_affichage: budget.ordre_affichage.toString(),
       montants: budget.montants.map(m => m.toString())
     });
@@ -87,6 +104,7 @@ function BudgetCF() {
         annee: selectedYear,
         mois: index + 1,
         designation: formData.designation,
+        categorie_achat_id: formData.categorie_achat_id || null,
         montant: parseFloat(montant),
         ordre_affichage: parseInt(formData.ordre_affichage)
       }));
@@ -103,6 +121,7 @@ function BudgetCF() {
       setShowForm(false);
       setFormData({
         designation: '',
+        categorie_achat_id: '',
         ordre_affichage: '0',
         montants: Array(12).fill('0')
       });
@@ -204,6 +223,27 @@ function BudgetCF() {
     fetchEntites();
   }, []);
 
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const { data, error } = await supabase
+          .from('fin_categorie_achat')
+          .select('*')
+          .eq('actif', true)
+          .eq('fait_partie_cout_mp', false)
+          .order('ordre_affichage')
+          .order('libelle');
+
+        if (error) throw error;
+        setCategories(data || []);
+      } catch (err) {
+        console.error('Erreur lors du chargement des catégories:', err);
+      }
+    }
+
+    fetchCategories();
+  }, []);
+
   if (loading) {
     return (
       <PageSection
@@ -227,13 +267,14 @@ function BudgetCF() {
     if (!acc[budget.designation]) {
       acc[budget.designation] = {
         designation: budget.designation,
+        categorie_achat_id: budget.categorie_achat_id,
         ordre_affichage: budget.ordre_affichage,
         montants: Array(12).fill(0)
       };
     }
     acc[budget.designation].montants[budget.mois - 1] = budget.montant;
     return acc;
-  }, {} as Record<string, { designation: string; ordre_affichage: number; montants: number[] }>);
+  }, {} as Record<string, { designation: string; categorie_achat_id: string | null; ordre_affichage: number; montants: number[] }>);
 
   // Convertir en tableau et trier par ordre d'affichage
   const groupedBudgets = Object.values(budgetsByDesignation)
@@ -328,6 +369,30 @@ function BudgetCF() {
                   />
                 </FormField>
 
+                <FormField label="Catégorie d'achat">
+                  <select
+                    name="categorie_achat_id"
+                    value={formData.categorie_achat_id}
+                    onChange={handleInputChange}
+                    style={{
+                      width: '100%',
+                      padding: '0.625rem 0.75rem',
+                      border: '2px solid var(--color-secondary)',
+                      borderRadius: '0.375rem',
+                      backgroundColor: 'var(--color-white)',
+                      color: 'var(--color-text)',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    <option value="">Sélectionner une catégorie</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.libelle}
+                      </option>
+                    ))}
+                  </select>
+                </FormField>
+
                 <FormField label="Ordre d'affichage" required>
                   <FormInput
                     style={{ width: '100px' }}
@@ -390,6 +455,7 @@ function BudgetCF() {
                     setShowForm(false);
                     setFormData({
                       designation: '',
+                      categorie_achat_id: '',
                       ordre_affichage: '0',
                       montants: Array(12).fill('0')
                     });
@@ -411,6 +477,7 @@ function BudgetCF() {
                 <tr>
                   <th style={{ width: '80px', padding: '8px', borderBottom: '2px solid #e5e7eb' }}></th>
                   <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Désignation</th>
+                  <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Catégorie</th>
                   <th style={{ textAlign: 'right', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem', width: '60px' }}>Ordre</th>
                   {mois.map((moisNom, index) => (
                     <th key={index} style={{ textAlign: 'right', padding: '4px', borderBottom: '2px solid #e5e7eb', fontSize: '0.75rem', width: '85px' }}>{moisNom}</th>
@@ -443,7 +510,8 @@ function BudgetCF() {
                             mois: 1,
                             designation: budget.designation,
                             montant: 0,
-                            ordre_affichage: budget.ordre_affichage
+                            ordre_affichage: budget.ordre_affichage,
+                            categorie_achat_id: budget.categorie_achat_id
                           })}
                           style={{
                             border: 'none',
@@ -463,6 +531,9 @@ function BudgetCF() {
                     <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem' }}>
                       {budget.designation}
                     </td>
+                    <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem' }}>
+                      {categories.find(c => c.id === budget.categorie_achat_id)?.libelle || '-'}
+                    </td>
                     <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb', fontSize: '0.75rem', textAlign: 'right' }}>
                       {budget.ordre_affichage}
                     </td>
@@ -479,6 +550,7 @@ function BudgetCF() {
                     <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb' }}>&nbsp;</td>
                     <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb' }}>&nbsp;</td>
                     <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb' }}>&nbsp;</td>
+                    <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb' }}>&nbsp;</td>
                     {Array(12).fill(null).map((_, index) => (
                       <td key={index} style={{ padding: '4px', borderBottom: '1px solid #e5e7eb' }}>&nbsp;</td>
                     ))}
@@ -488,9 +560,8 @@ function BudgetCF() {
                 {groupedBudgets.length > 0 && (
                   <tr>
                     <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb' }}></td>
-                    <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                      Total
-                    </td>
+                    <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb', fontSize: '0.75rem', fontWeight: 'bold' }}>Total</td>
+                    <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb' }}></td>
                     <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb' }}></td>
                     {Array(12).fill(null).map((_, moisIndex) => {
                       const total = groupedBudgets.reduce((sum, budget) => sum + budget.montants[moisIndex], 0);
