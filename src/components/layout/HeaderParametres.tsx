@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Building, Wallet, ChevronLeft, ChevronRight, Home, Users, Coffee, Receipt, Calendar, Truck, Tags } from 'lucide-react';
+import { Menu, Building, Wallet, ChevronLeft, ChevronRight, Home, Users, Coffee, Receipt, Calendar, Truck, Tags, CreditCard } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './HeaderParametres.module.css';
@@ -42,6 +42,10 @@ export function HeaderParametres({ title }: HeaderParametresProps) {
           <Link to="/settings/tva" className={styles.link}>
             <Receipt size={18} className={styles.icon} />
             <span className={styles.linkText}>Paramètres TVA</span>
+          </Link>
+          <Link to="/settings/payment-methods" className={styles.link}>
+            <CreditCard size={18} className={styles.icon} />
+            <span className={styles.linkText}>Modes de paiement</span>
           </Link>
           <Link to="/settings/purchase-categories" className={styles.link}>
             <Tags size={18} className={styles.icon} />

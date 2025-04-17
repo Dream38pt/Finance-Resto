@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Finance from './pages/Finance';
-import { BudgetView, BudgetCF, Invoice } from './pages/finance';
+import { BudgetView, BudgetCF, Invoice, NewInvoice } from './pages/finance';
 import Login from './pages/Login';
 import Settings from './pages/Settings';
 import Budget from './pages/finance/Budget';
@@ -12,6 +12,7 @@ import Employees from './pages/settings/Employees';
 import Days from './pages/settings/Days';
 import TVA from './pages/settings/TVA';
 import ServiceTypes from './pages/settings/ServiceTypes';
+import PaymentMethods from './pages/settings/PaymentMethods';
 import PurchaseCategories from './pages/settings/PurchaseCategories';
 import Suppliers from './pages/settings/Suppliers';
 import { MenuProvider } from './contexts/MenuContext';
@@ -46,6 +47,7 @@ function App() {
                 <Route path="budget" element={<Budget />} />
                 <Route path="budget-cf" element={<BudgetCF />} />
                 <Route path="budget-view" element={<BudgetView />} />
+                <Route path="nouvelle-facture" element={<NewInvoice />} />
                 <Route path="forecasts" element={<div>Prévisions</div>} />
               </Route>
               <Route path="/settings" element={
@@ -58,6 +60,7 @@ function App() {
                 <Route path="employees" element={<Employees />} />
                 <Route path="tva" element={<TVA />} />
                 <Route path="service-types" element={<ServiceTypes />} />
+                <Route path="payment-methods" element={<PaymentMethods />} />
                 <Route path="purchase-categories" element={<PurchaseCategories />} />
                 <Route path="suppliers" element={<Suppliers />} />
                 <Route path="days" element={<Days />} />

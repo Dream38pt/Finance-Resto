@@ -1,44 +1,67 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageSection } from '../../components/layout/page-layout';
 import { Form, FormField } from '../../components/ui/form';
 import { Button } from '../../components/ui/button';
-import { supabase } from '../../lib/supabase';
-import { useToast } from '../../contexts/ToastContext';
 import { theme } from '../../theme';
+import { useInvoices } from '../../hooks/useInvoices';
+import { InvoiceFilters } from '../../components/invoice/InvoiceFilters';
+import { InvoiceList } from '../../components/invoice/InvoiceList';
 
 function Invoice() {
-  const { showToast } = useToast();
+  const navigate = useNavigate();
+  const {
+    entites,
+    invoices,
+    loading,
+    error,
+    filters,
+    setFilters,
+    fetchInvoices
+  } = useInvoices();
+
+  if (loading) {
+    return (
+      <PageSection
+        title="Saisie des factures"
+        description="Chargement des données..."
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <PageSection
+        title="Saisie des factures"
+        description={`Erreur: ${error}`}
+      />
+    );
+  }
 
   return (
     <PageSection
       title="Saisie des factures"
-      description="Gestion des factures fournisseurs"
+      description="Sélectionnez les critères et cliquez sur Rechercher pour afficher les factures"
     >
-      <Form size={70}>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
-          <FormField label="Restaurant">
-            <select
-              style={{
-                width: '300px',
-                padding: '0.625rem 0.75rem',
-                border: '2px solid var(--color-secondary)',
-                borderRadius: '0.375rem',
-                backgroundColor: 'var(--color-white)',
-                color: 'var(--color-text)',
-                fontSize: '0.875rem'
-              }}
-            >
-              <option value="">Sélectionner un restaurant</option>
-            </select>
-          </FormField>
-          
-          <Button
-            label="Nouvelle facture"
-            icon="Plus"
-            color={theme.colors.primary}
-          />
-        </div>
-      </Form>
+      <div style={{ marginBottom: '2rem' }}>
+        <InvoiceFilters
+          entites={entites}
+          filters={filters}
+          setFilters={setFilters}
+          onSearch={fetchInvoices}
+        />
+      </div>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <Button
+          label="Ajouter une Facture"
+          icon="Plus"
+          color={theme.colors.primary}
+          onClick={() => navigate('/finance/nouvelle-facture', { state: { selectedEntiteId: filters.entite_id } })}
+        />
+      </div>
+
+      <InvoiceList invoices={invoices} />
     </PageSection>
   );
 }
