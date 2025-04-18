@@ -42,9 +42,9 @@ export function useInvoices() {
   const fetchInvoices = async () => {
     setLoading(true);
     try {
-      if (!filters.entite_id || !filters.annee) {
+      if (!filters.annee) {
         showToast({
-          label: 'Veuillez sélectionner un restaurant et une année',
+          label: 'Veuillez sélectionner une année',
           icon: 'AlertTriangle',
           color: theme.colors.warning
         });
