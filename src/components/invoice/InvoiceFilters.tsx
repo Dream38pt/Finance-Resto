@@ -37,14 +37,14 @@ export function InvoiceFilters({
   ];
 
   return (
-    <Form size={100}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', alignItems: 'flex-end' }}>
+    <Form size={100} style={{ margin: 0 }}>
+      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
         <FormField label="Restaurant">
           <select
             value={filters.entite_id}
             onChange={(e) => setFilters({ ...filters, entite_id: e.target.value })}
             style={{
-              width: '100%',
+              width: '180px',
               padding: '0.625rem 0.75rem',
               border: '2px solid var(--color-secondary)',
               borderRadius: '0.375rem',
@@ -75,7 +75,7 @@ export function InvoiceFilters({
             min="1900"
             max="9999"
             style={{
-              width: '100%',
+              width: '100px',
               padding: '0.625rem 0.75rem',
               border: '2px solid var(--color-secondary)',
               borderRadius: '0.375rem',
@@ -91,7 +91,7 @@ export function InvoiceFilters({
             value={filters.mois}
             onChange={(e) => setFilters({ ...filters, mois: e.target.value })}
             style={{
-              width: '100%',
+              width: '120px',
               padding: '0.625rem 0.75rem',
               border: '2px solid var(--color-secondary)',
               borderRadius: '0.375rem',
@@ -114,6 +114,7 @@ export function InvoiceFilters({
           icon="Search"
           color={theme.colors.primary}
           onClick={onSearch}
+          size="sm"
         />
       </div>
     </Form>

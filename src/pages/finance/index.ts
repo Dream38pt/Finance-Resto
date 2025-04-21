@@ -3,3 +3,4 @@ export { default as BudgetCF } from './BudgetCF';
 export { default as BudgetView } from './BudgetView';
 export { default as Invoice } from './Invoice';
 export { default as NewInvoice } from './NewInvoice';
+export { default as RevenueTracking } from './RevenueTracking';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Building, Wallet, ChevronLeft, ChevronRight, Home, Users, Coffee, Receipt, Calendar, Truck, Tags, CreditCard } from 'lucide-react';
+import { Menu, Building, Wallet, ChevronLeft, ChevronRight, Home, Users, Coffee, Receipt, Calendar, Truck, Tags, CreditCard, ArrowLeftRight, Upload } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './HeaderParametres.module.css';
@@ -31,6 +31,10 @@ export function HeaderParametres({ title }: HeaderParametresProps) {
             <Wallet size={18} className={styles.icon} />
             <span className={styles.linkText}>Comptes Bancaires</span>
           </Link>
+          <Link to="/settings/bank-movement-types" className={styles.link}>
+            <ArrowLeftRight size={18} className={styles.icon} />
+            <span className={styles.linkText}>Types mouvement Bancaire</span>
+          </Link>
           <Link to="/settings/service-types" className={styles.link}>
             <Coffee size={18} className={styles.icon} />
             <span className={styles.linkText}>Type de service CA</span>
@@ -58,6 +62,10 @@ export function HeaderParametres({ title }: HeaderParametresProps) {
           <Link to="/settings/days" className={styles.link}>
             <Calendar size={18} className={styles.icon} />
             <span className={styles.linkText}>Paramètres jours</span>
+          </Link>
+          <Link to="/settings/import" className={styles.link}>
+            <Upload size={18} className={styles.icon} />
+            <span className={styles.linkText}>Import</span>
           </Link>
         </nav>
         <button 

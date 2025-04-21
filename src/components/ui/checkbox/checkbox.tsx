@@ -38,6 +38,10 @@ export function Checkbox({
     <label 
       className={`${styles.checkbox} ${disabled ? styles.disabled : ''} ${className}`}
       style={style}
+      onClick={(e) => {
+        // Empêcher la propagation pour éviter les conflits avec les gestionnaires d'événements parents
+        e.stopPropagation();
+      }}
     >
       <input
         type="checkbox"

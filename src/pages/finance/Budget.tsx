@@ -182,7 +182,7 @@ function Budget() {
 
       try {
         const { data, error } = await supabase
-          .from('service_ca')
+          .from('ca_type_service')
           .select('id, code_service_ca, libelle_service_ca')
           .eq('entite_id', selectedEntite)
           .order('ordre_affich', { ascending: true, nullsLast: true })

@@ -22,7 +22,7 @@ interface Entite {
 }
 
 interface BudgetData {
-  service_ca: {
+  ca_type_service: {
     libelle_service_ca: string;
   };
   mois: number;
@@ -45,6 +45,7 @@ interface BudgetCF {
 
 function BudgetView() {
   const [entites, setEntites] = useState<Entite[]>([]);
+  const [services, setServices] = useState<any[]>([]);
   const [selectedEntite, setSelectedEntite] = useState<string>('');
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [loading, setLoading] = useState(true);
@@ -88,7 +89,7 @@ function BudgetView() {
       const { data, error } = await supabase
         .from('budget_ca_mensuel')
         .select(`
-          service_ca (
+          ca_type_service (
             libelle_service_ca
           ),
           mois,
@@ -99,11 +100,12 @@ function BudgetView() {
         `)
         .eq('entite_id', selectedEntite)
         .eq('annee', selectedYear)
-        .order('service_ca_id')
+        .order('service_ca_id', { ascending: true })
         .order('mois');
 
       if (error) throw error;
       setBudgetData(data || []);
+
       // Récupérer les coûts fixes
       const { data: cfData, error: cfError } = await supabase
         .from('ca_budget_cf')
@@ -149,6 +151,32 @@ function BudgetView() {
       });
     }
   };
+
+  useEffect(() => {
+    async function fetchServices() {
+      if (!selectedEntite) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('ca_type_service')
+          .select('id, code_service_ca, libelle_service_ca')
+          .eq('entite_id', selectedEntite)
+          .order('ordre_affich', { ascending: true, nullsLast: true })
+          .order('code_service_ca');
+
+        if (error) throw error;
+        setServices(data || []);
+      } catch (err) {
+        showToast({
+          label: err instanceof Error ? err.message : 'Erreur lors du chargement des services',
+          icon: 'AlertTriangle',
+          color: '#ef4444'
+        });
+      }
+    }
+
+    fetchServices();
+  }, [selectedEntite, showToast]);
 
   useEffect(() => {
     async function fetchEntites() {
@@ -264,7 +292,7 @@ function BudgetView() {
               </tr>
             </thead>
             <tbody>
-              {Array.from(new Set(budgetData.map(b => b.service_ca.libelle_service_ca))).map(service => (
+              {Array.from(new Set(budgetData.map(b => b.ca_type_service.libelle_service_ca))).map(service => (
                 <React.Fragment key={service}>
                   {/* Ligne QJP */}
                   <tr>
@@ -273,7 +301,7 @@ function BudgetView() {
                     </td>
                     {mois.map((_, index) => {
                       const data = budgetData.find(b => 
-                        b.service_ca.libelle_service_ca === service && 
+                        b.ca_type_service.libelle_service_ca === service && 
                         b.mois === index + 1
                       );
                       return (
@@ -292,7 +320,7 @@ function BudgetView() {
                     </td>
                     {mois.map((_, index) => {
                       const data = budgetData.find(b => 
-                        b.service_ca.libelle_service_ca === service && 
+                        b.ca_type_service.libelle_service_ca === service && 
                         b.mois === index + 1
                       );
                       return (
@@ -311,7 +339,7 @@ function BudgetView() {
                     </td>
                     {mois.map((_, index) => {
                       const data = budgetData.find(b => 
-                        b.service_ca.libelle_service_ca === service && 
+                        b.ca_type_service.libelle_service_ca === service && 
                         b.mois === index + 1
                       );
                       return (
@@ -330,7 +358,7 @@ function BudgetView() {
                     </td>
                     {mois.map((_, index) => {
                       const data = budgetData.find(b => 
-                        b.service_ca.libelle_service_ca === service && 
+                        b.ca_type_service.libelle_service_ca === service && 
                         b.mois === index + 1
                       );
                       return (
@@ -341,7 +369,7 @@ function BudgetView() {
                     })}
                     <td style={{ padding: '2px 8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.75rem', textAlign: 'right', fontWeight: 'bold', borderRight: '1px solid black' }}>
                       {budgetData
-                        .filter(b => b.service_ca.libelle_service_ca === service)
+                        .filter(b => b.ca_type_service.libelle_service_ca === service)
                         .reduce((sum, b) => sum + (b.cadm || 0), 0)
                         .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}
                     </td>
@@ -549,8 +577,9 @@ function BudgetView() {
                       return (
                         <td key={index} style={{ 
                           padding: '8px', 
-                          borderBottom: '1px solid #e5e7eb', 
-                          fontSize: '0.75rem', 
+                          
+                          borderBottom: '1px solid #e5e7eb',
+                          fontSize: '0.75rem',
                           textAlign: 'right',
                           borderRight: '1px solid black',
                           backgroundColor: coutMois > 0 ? 'transparent' : '#f3f4f6'

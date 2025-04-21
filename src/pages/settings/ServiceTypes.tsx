@@ -19,6 +19,8 @@ interface ServiceCA {
   date_debut: string;
   date_fin: string | null;
   ordre_affich: number | null;
+  heure_debut: string | null;
+  heure_fin: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -43,7 +45,9 @@ function ServiceTypes() {
     libelle_service_ca: '',
     date_debut: '',
     date_fin: '',
-    ordre_affich: null
+    ordre_affichage: '',
+    heure_debut: '',
+    heure_fin: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -57,17 +61,26 @@ function ServiceTypes() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const serviceData = {
-        ...formData,
-        date_fin: formData.date_fin || null
+      // Conversion du nom du champ ordre_affichage vers ordre_affich pour la base de données
+      const serviceData: any = {
+        entite_id: formData.entite_id,
+        code_service_ca: formData.code_service_ca,
+        libelle_service_ca: formData.libelle_service_ca,
+        heure_debut: formData.heure_debut || null,
+        heure_fin: formData.heure_fin || null,
+        date_fin: formData.date_fin || null,
+        date_debut: formData.date_debut,
+        ordre_affich: formData.ordre_affichage ? parseInt(formData.ordre_affichage) : null
       };
+
+      console.log('Données à envoyer:', serviceData);
 
       let data, error;
 
       if (editingService) {
         // Mode modification
         ({ data, error } = await supabase
-          .from('service_ca')
+          .from('ca_type_service')
           .update(serviceData)
           .eq('id', editingService.id)
           .select(`
@@ -81,7 +94,7 @@ function ServiceTypes() {
       } else {
         // Mode création
         ({ data, error } = await supabase
-          .from('service_ca')
+          .from('ca_type_service')
           .insert([serviceData])
           .select(`
             *,
@@ -118,9 +131,13 @@ function ServiceTypes() {
         code_service_ca: '',
         libelle_service_ca: '',
         date_debut: '',
-        date_fin: ''
+        date_fin: '',
+        ordre_affichage: '',
+        heure_debut: '',
+        heure_fin: ''
       });
     } catch (err) {
+      console.error('Erreur lors de la soumission:', err);
       showToast({
         label: err instanceof Error ? err.message : `Erreur lors de la ${editingService ? 'modification' : 'création'}`,
         icon: 'AlertTriangle',
@@ -133,7 +150,7 @@ function ServiceTypes() {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer le service "${service.libelle_service_ca}" ?`)) {
       try {
         const { error } = await supabase
-          .from('service_ca')
+          .from('ca_type_service')
           .delete()
           .eq('id', service.id);
 
@@ -163,7 +180,9 @@ function ServiceTypes() {
       libelle_service_ca: service.libelle_service_ca,
       date_debut: service.date_debut,
       date_fin: service.date_fin || '',
-      ordre_affich: service.ordre_affich
+      ordre_affichage: service.ordre_affich !== null ? service.ordre_affich.toString() : '',
+      heure_debut: service.heure_debut || '',
+      heure_fin: service.heure_fin || ''
     });
     setShowForm(true);
     window.scrollTo(0, document.body.scrollHeight);
@@ -172,6 +191,7 @@ function ServiceTypes() {
   useEffect(() => {
     async function fetchData() {
       try {
+        console.log('Chargement des services...');
         // Charger les entités
         const { data: entitesData, error: entitesError } = await supabase
           .from('entite')
@@ -181,9 +201,10 @@ function ServiceTypes() {
         if (entitesError) throw entitesError;
         setEntites(entitesData);
 
+        console.log('Chargement des types de service...');
         // Charger les services
         const { data: servicesData, error: servicesError } = await supabase
-          .from('service_ca')
+          .from('ca_type_service')
           .select(`
             *,
             entite:entite_id (
@@ -196,8 +217,10 @@ function ServiceTypes() {
           .order('code_service_ca', { ascending: true });
 
         if (servicesError) throw servicesError;
+        console.log('Services chargés:', servicesData);
         setServices(servicesData);
       } catch (err) {
+        console.error('Erreur lors du chargement des données:', err);
         setError(err instanceof Error ? err.message : 'Une erreur est survenue');
       } finally {
         setLoading(false);
@@ -249,13 +272,15 @@ function ServiceTypes() {
               <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Libellé</th>
               <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Date début</th>
               <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Date fin</th>
+              <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Heure début</th>
+              <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Heure fin</th>
               <th style={{ textAlign: 'right', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Ordre</th>
             </tr>
           </thead>
           <tbody>
             {services.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ padding: '8px', textAlign: 'center', fontSize: '0.875rem' }}>
+                <td colSpan={9} style={{ padding: '8px', textAlign: 'center', fontSize: '0.875rem' }}>
                   Aucun type de service trouvé.
                 </td>
               </tr>
@@ -314,6 +339,12 @@ function ServiceTypes() {
                 </td>
                 <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem' }}>
                   {service.date_fin ? new Date(service.date_fin).toLocaleDateString('fr-FR') : '-'}
+                </td>
+                <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem' }}>
+                  {service.heure_debut ? service.heure_debut.substring(0, 5).replace(':', 'h') : '-'}
+                </td>
+                <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem' }}>
+                  {service.heure_fin ? service.heure_fin.substring(0, 5).replace(':', 'h') : '-'}
                 </td>
                 <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'right' }}>
                   {service.ordre_affich || '-'}
@@ -394,12 +425,32 @@ function ServiceTypes() {
                 onChange={handleInputChange}
               />
             </FormField>
+
+            <FormField label="Heure de début">
+              <FormInput
+                type="time"
+                name="heure_debut"
+                value={formData.heure_debut}
+                onChange={handleInputChange}
+                placeholder="11:30"
+              />
+            </FormField>
+
+            <FormField label="Heure de fin">
+              <FormInput
+                type="time"
+                name="heure_fin"
+                value={formData.heure_fin}
+                onChange={handleInputChange}
+                placeholder="14:30"
+              />
+            </FormField>
             
             <FormField label="Ordre d'affichage">
               <FormInput
                 type="number"
-                name="ordre_affich"
-                value={formData.ordre_affich || ''}
+                name="ordre_affichage"
+                value={formData.ordre_affichage}
                 onChange={handleInputChange}
                 min="0"
                 placeholder="Ordre d'affichage (optionnel)"
@@ -421,7 +472,9 @@ function ServiceTypes() {
                     libelle_service_ca: '',
                     date_debut: '',
                     date_fin: '',
-                    ordre_affich: null
+                    ordre_affichage: '',
+                    heure_debut: '',
+                    heure_fin: ''
                   });
                 }}
               />

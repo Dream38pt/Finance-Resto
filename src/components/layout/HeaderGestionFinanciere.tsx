@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, ChevronLeft, ChevronRight, Home, Calculator, Eye, FileText, Receipt } from 'lucide-react';
+import { Menu, ChevronLeft, ChevronRight, Home, Calculator, Eye, FileText, Receipt, BarChart2 } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import { Link } from 'react-router-dom';
 import styles from './HeaderGestionFinanciere.module.css';
@@ -27,6 +27,10 @@ export function HeaderGestionFinanciere({ title }: HeaderGestionFinanciereProps)
           <Link to="/finance/invoice" className={styles.link}>
             <Receipt size={18} className={styles.icon} />
             <span className={styles.linkText}>Saisie Factures</span>
+          </Link>
+          <Link to="/finance/revenue" className={styles.link}>
+            <BarChart2 size={18} className={styles.icon} />
+            <span className={styles.linkText}>Suivi CA Réel</span>
           </Link>
           <div className={styles.separator} />
           <Link to="/finance/budget" className={styles.link}>

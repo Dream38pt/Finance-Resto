@@ -99,14 +99,15 @@ export function InvoiceLineForm({
         />
       </FormField>
 
-      <FormField label="Quantité">
+      <FormField label="Montant HT" required>
         <FormInput
           type="number"
-          name="quantite"
-          value={formData.quantite}
+          name="montant_ht"
+          value={formData.montant_ht}
           onChange={handleInputChange}
           min="0"
-          step="0.001"
+          step="0.01"
+          required
         />
       </FormField>
 
@@ -121,15 +122,14 @@ export function InvoiceLineForm({
         />
       </FormField>
 
-      <FormField label="Montant HT" required>
+      <FormField label="Quantité">
         <FormInput
           type="number"
-          name="montant_ht"
-          value={formData.montant_ht}
+          name="quantite"
+          value={formData.quantite}
           onChange={handleInputChange}
           min="0"
-          step="0.01"
-          required
+          step="0.001"
         />
       </FormField>
 
