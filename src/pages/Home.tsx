@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageLayout, PageSection } from '../components/layout/page-layout';
 import { Button } from '../components/ui/button';
 import { Toggle } from '../components/ui/toggle';
@@ -7,6 +7,7 @@ import { Dropdown } from '../components/ui/dropdown';
 import { ProgressBar } from '../components/ui/progress-bar';
 import { Form, FormField, FormInput, FormActions } from '../components/ui/form';
 import { useToast } from '../contexts/ToastContext';
+import { supabase } from '../lib/supabase';
 import styles from './Home.module.css';
 import { theme } from '../theme';
 import { useLocation } from 'react-router-dom';
@@ -14,6 +15,8 @@ import { useLocation } from 'react-router-dom';
 function Home() {
   const location = useLocation();
   console.log('Page courante:', location.pathname);
+  const [userName, setUserName] = useState<string>('');
+  const [loading, setLoading] = useState(true);
 
   const [notifications, setNotifications] = React.useState(true);
   const [darkMode, setDarkMode] = React.useState(false);
@@ -29,6 +32,41 @@ function Home() {
   const [selectedColor, setSelectedColor] = React.useState('');
   const [selectedIcon, setSelectedIcon] = React.useState('');
   const { toasts, showToast, closeToast } = useToast();
+
+  useEffect(() => {
+    async function fetchUserProfile() {
+      try {
+        setLoading(true);
+        
+        // Récupérer l'utilisateur actuellement connecté
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          // Récupérer les informations du collaborateur
+          const { data, error } = await supabase
+            .from('param_collaborateur')
+            .select('nom, prenom')
+            .eq('auth_id', user.id)
+            .single();
+          
+          if (error) {
+            console.error('Erreur lors de la récupération du profil:', error);
+            return;
+          }
+          
+          if (data) {
+            setUserName(`${data.prenom} ${data.nom}`);
+          }
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchUserProfile();
+  }, []);
 
   const languages = [
     { value: 'fr', label: 'Français' },
@@ -70,7 +108,7 @@ function Home() {
   return (
     <PageLayout>
       <PageSection
-        title="Bienvenue"
+        title={`Bienvenue${userName ? ` ${userName}` : ''}`}
         description="Découvrez nos différents styles de boutons utilisant notre thème personnalisé."
         subtitle="Boutons avec icônes"
       >

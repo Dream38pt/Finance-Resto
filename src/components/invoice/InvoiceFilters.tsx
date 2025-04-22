@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, FormField } from '../ui/form';
 import { Button } from '../ui/button';
 import { theme } from '../../theme';
 import { Entite } from '../../types/budget';
+import { supabase } from '../../lib/supabase';
 
 interface InvoiceFiltersProps {
   entites: Entite[];
@@ -15,12 +16,72 @@ interface InvoiceFiltersProps {
   onSearch: () => void;
 }
 
+interface UserEntiteAccess {
+  entite_id: string;
+}
+
 export function InvoiceFilters({
   entites,
   filters,
   setFilters,
   onSearch
 }: InvoiceFiltersProps) {
+  const [userEntites, setUserEntites] = useState<UserEntiteAccess[]>([]);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    async function fetchUserEntiteAccess() {
+      try {
+        setLoading(true);
+        
+        // Récupérer l'utilisateur connecté
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) return;
+        
+        // Vérifier si l'utilisateur est un administrateur (a le rôle admin)
+        const { data: collaborateur } = await supabase
+          .from('param_collaborateur')
+          .select('id, role_id, param_role:role_id(libelle)')
+          .eq('auth_id', user.id)
+          .single();
+        
+        if (collaborateur?.param_role?.libelle === 'Administrateur') {
+          setIsAdmin(true);
+          setLoading(false);
+          return;
+        }
+        
+        // Récupérer les entités auxquelles l'utilisateur a accès
+        if (collaborateur) {
+          const { data: habilitations } = await supabase
+            .from('param_habilitation')
+            .select('entite_id')
+            .eq('collaborateur_id', collaborateur.id)
+            .eq('est_actif', true)
+            .gte('date_debut', new Date().toISOString())
+            .or(`date_fin.is.null,date_fin.gte.${new Date().toISOString()}`);
+          
+          if (habilitations) {
+            setUserEntites(habilitations);
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des habilitations:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchUserEntiteAccess();
+  }, []);
+
+  // Filtrer les entités selon les habilitations de l'utilisateur
+  const filteredEntites = isAdmin 
+    ? entites 
+    : entites.filter(entite => userEntites.some(access => access.entite_id === entite.id));
+
   const mois = [
     { value: 1, label: 'Janvier' },
     { value: 2, label: 'Février' },
@@ -43,6 +104,7 @@ export function InvoiceFilters({
           <select
             value={filters.entite_id}
             onChange={(e) => setFilters({ ...filters, entite_id: e.target.value })}
+            disabled={loading}
             style={{
               width: '180px',
               padding: '0.625rem 0.75rem',
@@ -54,7 +116,7 @@ export function InvoiceFilters({
             }}
           >
             <option value="">Tous les restaurants</option>
-            {entites?.map(entite => (
+            {filteredEntites.map(entite => (
               <option key={entite.id} value={entite.id}>
                 {entite.code} - {entite.libelle}
               </option>

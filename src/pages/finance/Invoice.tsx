@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageSection } from '../../components/layout/page-layout';
 import { Form } from '../../components/ui/form';
@@ -10,10 +10,14 @@ import { Invoice as InvoiceType } from '../../types/invoice';
 import { InvoiceFilters } from '../../components/invoice/InvoiceFilters';
 import { InvoiceList } from '../../components/invoice/InvoiceList';
 import { Button } from '../../components/ui/button';
+import { useAuth } from '../../contexts/AuthContext';
 
 function Invoice() {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [userEntites, setUserEntites] = useState<string[]>([]);
   const {
     entites,
     invoices,
@@ -23,6 +27,46 @@ function Invoice() {
     setFilters,
     fetchInvoices
   } = useInvoices();
+
+  // Vérifier si l'utilisateur est admin et récupérer ses entités autorisées
+  useEffect(() => {
+    async function checkUserPermissions() {
+      if (!user) return;
+      
+      try {
+        // Vérifier si l'utilisateur est un administrateur
+        const { data: collaborateur } = await supabase
+          .from('param_collaborateur')
+          .select('id, role_id, param_role:role_id(libelle)')
+          .eq('auth_id', user.id)
+          .single();
+        
+        if (collaborateur?.param_role?.libelle === 'Administrateur') {
+          setIsAdmin(true);
+          return;
+        }
+        
+        // Récupérer les entités auxquelles l'utilisateur a accès
+        if (collaborateur) {
+          const { data: habilitations } = await supabase
+            .from('param_habilitation')
+            .select('entite_id')
+            .eq('collaborateur_id', collaborateur.id)
+            .eq('est_actif', true)
+            .gte('date_debut', new Date().toISOString())
+            .or(`date_fin.is.null,date_fin.gte.${new Date().toISOString()}`);
+          
+          if (habilitations) {
+            setUserEntites(habilitations.map(h => h.entite_id));
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la vérification des permissions:', error);
+      }
+    }
+    
+    checkUserPermissions();
+  }, [user]);
 
   const handleEdit = (invoice: InvoiceType) => {
     navigate('/finance/nouvelle-facture', { 
@@ -95,7 +139,14 @@ function Invoice() {
           label="Ajouter une Facture"
           icon="Plus"
           color={theme.colors.primary}
-          onClick={() => navigate('/finance/nouvelle-facture', { state: { selectedEntiteId: filters.entite_id } })}
+          onClick={() => {
+            // Si l'utilisateur n'est pas admin et a accès à une seule entité, présélectionner cette entité
+            if (!isAdmin && userEntites.length === 1) {
+              navigate('/finance/nouvelle-facture', { state: { selectedEntiteId: userEntites[0] } });
+            } else {
+              navigate('/finance/nouvelle-facture', { state: { selectedEntiteId: filters.entite_id } });
+            }
+          }}
         />
       </div>
 

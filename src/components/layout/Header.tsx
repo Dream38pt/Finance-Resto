@@ -1,7 +1,9 @@
 import React from 'react';
-import { Menu, Home, Info, Settings, Mail, ChevronLeft, ChevronRight, Wallet } from 'lucide-react';
+import { Menu, Home, Settings, Mail, ChevronLeft, ChevronRight, Wallet, LogOut, UserCircle } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import { Link, useLocation } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import styles from './Header.module.css';
 
 interface HeaderProps {
@@ -11,6 +13,7 @@ interface HeaderProps {
 export function Header({ title }: HeaderProps) {
   const { isExpanded, toggleMenu } = useMenu();
   const location = useLocation();
+  const { showToast } = useToast();
   
   const getTitle = () => {
     switch (location.pathname) {
@@ -18,6 +21,23 @@ export function Header({ title }: HeaderProps) {
         return 'Paramètrages';
       default:
         return 'Finance-Resto';
+    }
+  };
+  
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      showToast({
+        label: 'Déconnexion réussie',
+        icon: 'Check',
+        color: '#10b981'
+      });
+    } catch (error) {
+      showToast({
+        label: 'Erreur lors de la déconnexion',
+        icon: 'AlertTriangle',
+        color: '#ef4444'
+      });
     }
   };
 
@@ -33,9 +53,9 @@ export function Header({ title }: HeaderProps) {
             <Home size={20} className={styles.icon} />
             <span className={styles.linkText}>Accueil</span>
           </Link>
-          <Link to="/about" className={styles.link}>
-            <Info size={20} className={styles.icon} />
-            <span className={styles.linkText}>À propos</span>
+          <Link to="/profile" className={styles.link}>
+            <UserCircle size={20} className={styles.icon} />
+            <span className={styles.linkText}>Mon Profil</span>
           </Link>
           <Link to="/settings" className={styles.link}>
             <Settings size={20} className={styles.icon} />
@@ -50,6 +70,14 @@ export function Header({ title }: HeaderProps) {
             <span className={styles.linkText}>Contact</span>
           </Link>
         </nav>
+        <button 
+          className={styles.logoutButton}
+          onClick={handleLogout}
+          aria-label="Déconnexion"
+        >
+          <LogOut size={20} />
+          <span className={styles.linkText}>Déconnexion</span>
+        </button>
         <button 
           className={styles.toggleButton}
           onClick={toggleMenu}

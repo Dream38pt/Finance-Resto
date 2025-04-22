@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PageSection } from '../../components/layout/page-layout';
 import { Form, FormField, FormInput, FormActions } from '../../components/ui/form';
@@ -28,6 +28,8 @@ function NewInvoice() {
   const [invoiceLines, setInvoiceLines] = useState([]);
   const [showLineForm, setShowLineForm] = useState(false);
   const [categories, setCategories] = useState<{ id: string; libelle: string; }[]>([]);
+  const [userEntites, setUserEntites] = useState<string[]>([]);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loadingLines, setLoadingLines] = useState(false);
   const [editingLine, setEditingLine] = useState<InvoiceLine | null>(null);
   const [formData, setFormData] = useState<InvoiceFormData>({
@@ -42,6 +44,49 @@ function NewInvoice() {
     commentaire: editingInvoice?.commentaire || '',
     file: null
   });
+
+  // Récupérer les entités auxquelles l'utilisateur a accès
+  useEffect(() => {
+    async function fetchUserEntiteAccess() {
+      try {
+        // Récupérer l'utilisateur connecté
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) return;
+        
+        // Vérifier si l'utilisateur est un administrateur (a le rôle admin)
+        const { data: collaborateur } = await supabase
+          .from('param_collaborateur')
+          .select('id, role_id, param_role:role_id(libelle)')
+          .eq('auth_id', user.id)
+          .single();
+        
+        if (collaborateur?.param_role?.libelle === 'Administrateur') {
+          setIsAdmin(true);
+          return;
+        }
+        
+        // Récupérer les entités auxquelles l'utilisateur a accès
+        if (collaborateur) {
+          const { data: habilitations } = await supabase
+            .from('param_habilitation')
+            .select('entite_id')
+            .eq('collaborateur_id', collaborateur.id)
+            .eq('est_actif', true)
+            .gte('date_debut', new Date().toISOString())
+            .or(`date_fin.is.null,date_fin.gte.${new Date().toISOString()}`);
+          
+          if (habilitations) {
+            setUserEntites(habilitations.map(h => h.entite_id));
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des habilitations:', error);
+      }
+    }
+    
+    fetchUserEntiteAccess();
+  }, []);
 
   // Chargement des données de référence
   React.useEffect(() => {
@@ -58,6 +103,7 @@ function NewInvoice() {
         if (categoriesData) setCategories(categoriesData);
 
         // Entités
+        // Toutes les entités seront chargées, mais filtrées dans le rendu
         const { data: entitesData } = await supabase
           .from('entite')
           .select('id, code, libelle')
@@ -86,6 +132,12 @@ function NewInvoice() {
     }
     fetchData();
   }, []);
+
+  // Filtrer les entités selon les habilitations de l'utilisateur
+  const filteredEntites = isAdmin 
+    ? entites 
+    : entites.filter(entite => userEntites.includes(entite.id));
+
 
   // Charger les lignes de facture si on est en mode édition
   React.useEffect(() => {
@@ -417,7 +469,7 @@ function NewInvoice() {
               required
             >
               <option value="">Sélectionner un restaurant</option>
-              {entites.map(entite => (
+              {filteredEntites.map(entite => (
                 <option key={entite.id} value={entite.id}>
                   {entite.code} - {entite.libelle}
                 </option>

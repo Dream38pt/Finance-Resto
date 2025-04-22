@@ -11,9 +11,12 @@ function Login() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    nom: '',
+    prenom: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,22 +32,55 @@ function Login() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password
-      });
+      if (isSignUp) {
+        // Inscription
+        const { data: authData, error: signUpError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password
+        });
 
-      if (error) throw error;
+        if (signUpError) throw signUpError;
+        
+        if (authData.user) {
+          // Créer l'entrée dans param_collaborateur
+          const { error: collaborateurError } = await supabase
+            .from('param_collaborateur')
+            .insert([{
+              auth_id: authData.user.id,
+              nom: formData.nom,
+              prenom: formData.prenom
+            }]);
+          
+          if (collaborateurError) throw collaborateurError;
+          
+          showToast({
+            label: 'Compte créé avec succès',
+            icon: 'Check',
+            color: '#10b981'
+          });
+          
+          // Rediriger vers la page d'accueil
+          navigate('/');
+        }
+      } else {
+        // Connexion
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password
+        });
 
-      navigate('/');
-      showToast({
-        label: 'Connexion réussie',
-        icon: 'Check',
-        color: '#10b981'
-      });
+        if (error) throw error;
+
+        navigate('/');
+        showToast({
+          label: 'Connexion réussie',
+          icon: 'Check',
+          color: '#10b981'
+        });
+      }
     } catch (error) {
       showToast({
-        label: error instanceof Error ? error.message : 'Erreur de connexion',
+        label: error instanceof Error ? error.message : `Erreur de ${isSignUp ? 'création de compte' : 'connexion'}`,
         icon: 'AlertTriangle',
         color: '#ef4444'
       });
@@ -53,12 +89,49 @@ function Login() {
     }
   };
 
+  const toggleMode = () => {
+    setIsSignUp(!isSignUp);
+    // Réinitialiser le formulaire lors du changement de mode
+    setFormData({
+      email: '',
+      password: '',
+      nom: '',
+      prenom: ''
+    });
+  };
+
   return (
     <AuthLayout
       title="Finance-Resto"
-      description="Connectez-vous pour accéder à l'application"
+      description={isSignUp ? "Créez un compte pour accéder à l'application" : "Connectez-vous pour accéder à l'application"}
     >
       <Form onSubmit={handleSubmit}>
+        {isSignUp && (
+          <>
+            <FormField label="Nom" required>
+              <FormInput
+                type="text"
+                name="nom"
+                value={formData.nom}
+                onChange={handleInputChange}
+                placeholder="Votre nom"
+                required
+              />
+            </FormField>
+            
+            <FormField label="Prénom" required>
+              <FormInput
+                type="text"
+                name="prenom"
+                value={formData.prenom}
+                onChange={handleInputChange}
+                placeholder="Votre prénom"
+                required
+              />
+            </FormField>
+          </>
+        )}
+        
         <FormField label="Email" required>
           <FormInput
             type="email"
@@ -66,6 +139,7 @@ function Login() {
             value={formData.email}
             onChange={handleInputChange}
             placeholder="votre@email.com"
+            required
           />
         </FormField>
           
@@ -76,18 +150,42 @@ function Login() {
             value={formData.password}
             onChange={handleInputChange}
             placeholder="••••••••"
+            required
           />
         </FormField>
           
         <FormActions>
           <Button
-            label={loading ? "Connexion en cours..." : "Se connecter"}
+            label={loading ? (isSignUp ? "Création en cours..." : "Connexion en cours...") : (isSignUp ? "Créer un compte" : "Se connecter")}
             type="submit"
-            icon="LogIn"
+            icon={isSignUp ? "UserPlus" : "LogIn"}
             color={theme.colors.primary}
             disabled={loading}
           />
         </FormActions>
+        
+        <div style={{ 
+          marginTop: '1.5rem', 
+          textAlign: 'center', 
+          fontSize: '0.875rem',
+          color: 'var(--color-text-light)'
+        }}>
+          {isSignUp ? "Vous avez déjà un compte ?" : "Vous n'avez pas de compte ?"}{' '}
+          <button
+            type="button"
+            onClick={toggleMode}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: theme.colors.primary,
+              cursor: 'pointer',
+              fontWeight: 500,
+              padding: 0
+            }}
+          >
+            {isSignUp ? "Se connecter" : "Créer un compte"}
+          </button>
+        </div>
       </Form>
     </AuthLayout>
   );

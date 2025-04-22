@@ -1,7 +1,9 @@
 import React from 'react';
-import { Menu, ChevronLeft, ChevronRight, Home, Calculator, Eye, FileText, Receipt, BarChart2 } from 'lucide-react';
+import { Menu, ChevronLeft, ChevronRight, Home, Calculator, Eye, FileText, Receipt, BarChart2, LogOut } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
 import styles from './HeaderGestionFinanciere.module.css';
 
 interface HeaderGestionFinanciereProps {
@@ -10,6 +12,24 @@ interface HeaderGestionFinanciereProps {
 
 export function HeaderGestionFinanciere({ title }: HeaderGestionFinanciereProps) {
   const { isExpanded, toggleMenu } = useMenu();
+  const { showToast } = useToast();
+  
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      showToast({
+        label: 'Déconnexion réussie',
+        icon: 'Check',
+        color: '#10b981'
+      });
+    } catch (error) {
+      showToast({
+        label: 'Erreur lors de la déconnexion',
+        icon: 'AlertTriangle',
+        color: '#ef4444'
+      });
+    }
+  };
   
   return (
     <header className={`${styles.header} ${isExpanded ? styles.expanded : styles.collapsed}`}>
@@ -46,6 +66,14 @@ export function HeaderGestionFinanciere({ title }: HeaderGestionFinanciereProps)
             <span className={styles.linkText}>Visu du Budget CA</span>
           </Link>
         </nav>
+        <button 
+          className={styles.logoutButton}
+          onClick={handleLogout}
+          aria-label="Déconnexion"
+        >
+          <LogOut size={18} className={styles.icon} />
+          <span className={styles.linkText}>Déconnexion</span>
+        </button>
         <button 
           className={styles.toggleButton}
           onClick={toggleMenu}

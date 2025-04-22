@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Finance from './pages/Finance';
+import Profile from './pages/Profile';
 import { BudgetView, BudgetCF, Invoice, NewInvoice } from './pages/finance';
 import RevenueTracking from './pages/finance/RevenueTracking';
 import Login from './pages/Login';
@@ -53,6 +54,11 @@ function App() {
                 <Route path="nouvelle-facture" element={<NewInvoice />} />
                 <Route path="forecasts" element={<div>Prévisions</div>} />
               </Route>
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
               <Route path="/settings" element={
                 <ProtectedRoute>
                   <Settings />
