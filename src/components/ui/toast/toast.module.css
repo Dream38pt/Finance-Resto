@@ -2,13 +2,11 @@
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  margin-left: var(--menu-width);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   z-index: 50;
   pointer-events: none;
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toast {
@@ -29,13 +27,6 @@
   animation: slideOut 0.2s ease-in forwards;
 }
 
-.toastContainer.expanded {
-  --menu-width: 16rem;
-}
-
-.toastContainer.collapsed {
-  --menu-width: 5rem;
-}
 .icon {
   color: var(--toast-color, var(--color-primary));
   flex-shrink: 0;

@@ -32,6 +32,20 @@ function Suppliers() {
     actif: true
   });
 
+  const checkForAssociatedInvoices = async (supplierId: string): Promise<boolean> => {
+    const { data, error } = await supabase
+      .from('fin_facture_achat')
+      .select('id')
+      .eq('tiers_id', supplierId)
+      .limit(1);
+
+    if (error) {
+      throw error;
+    }
+
+    return data && data.length > 0;
+  };
+
   const handleDelete = async (supplier: Supplier) => {
     if (window.confirm(`Êtes-vous sûr de vouloir supprimer le tiers "${supplier.nom}" ?`)) {
       try {
@@ -49,6 +63,19 @@ function Suppliers() {
           color: '#10b981'
         });
       } catch (err) {
+        // Vérifier si c'est une erreur de contrainte de clé étrangère (code 23503)
+        if (err instanceof Error) {
+          const errorObj = JSON.parse(err.message);
+          if (errorObj && errorObj.code === '23503') {
+            showToast({
+              label: 'La suppression n\'est pas possible à cause de la présence de facture',
+              icon: 'AlertTriangle',
+              color: '#ef4444'
+            });
+            return;
+          }
+        }
+        
         showToast({
           label: err instanceof Error ? err.message : 'Erreur lors de la suppression',
           icon: 'AlertTriangle',

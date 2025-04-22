@@ -1,6 +1,5 @@
 import React from 'react';
 import { Toast } from './toast';
-import { useMenu } from '../../../contexts/MenuContext';
 import styles from './toast.module.css';
 
 export interface ToastData {
@@ -17,10 +16,8 @@ interface ToastContainerProps {
 }
 
 export function ToastContainer({ toasts, onClose }: ToastContainerProps) {
-  const { isExpanded } = useMenu();
-
   return (
-    <div className={`${styles.toastContainer} ${isExpanded ? styles.expanded : styles.collapsed}`}>
+    <div className={styles.toastContainer}>
       {toasts.map((toast) => (
         <Toast key={toast.id} {...toast} onClose={onClose} />
       ))}

@@ -63,7 +63,7 @@ function Entity() {
         setEntites(prev => prev.map(e => e.id === editingEntity.id ? data : e));
         setEditingEntity(null);
         showToast({
-          label: 'Entité modifiée avec succès',
+          label: `L'entité "${data.libelle}" a été modifiée avec succès`,
           icon: 'Check',
           color: '#10b981'
         });
@@ -71,7 +71,7 @@ function Entity() {
         setEntites(prev => [...prev, data]);
         setShowForm(false);
         showToast({
-          label: 'Entité créée avec succès',
+          label: `L'entité "${data.libelle}" a été créée avec succès`,
           icon: 'Check',
           color: '#10b981'
         });
@@ -79,8 +79,10 @@ function Entity() {
 
       setFormData({ code: '', libelle: '' });
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : `Erreur lors de la ${editingEntity ? 'modification' : 'création'}`;
+      
       showToast({
-        label: err instanceof Error ? err.message : `Erreur lors de la ${editingEntity ? 'modification' : 'création'}`,
+        label: errorMessage,
         icon: 'AlertTriangle',
         color: '#ef4444'
       });
@@ -107,13 +109,22 @@ function Entity() {
         setEntites(data || []);
 
         showToast({
-          label: 'Entité supprimée avec succès',
+          label: `L'entité "${entite.libelle}" a été supprimée avec succès`,
           icon: 'Check',
           color: '#10b981'
         });
       } catch (err) {
+        let errorMessage = 'Erreur lors de la suppression';
+        
+        // Vérifier si c'est une erreur de contrainte de clé étrangère
+        if (err instanceof Error && err.message.includes('violates foreign key constraint')) {
+          errorMessage = `Impossible de supprimer l'entité "${entite.libelle}" car elle est utilisée par d'autres éléments (comptes bancaires, factures, etc.)`;
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+        
         showToast({
-          label: err instanceof Error ? err.message : 'Erreur lors de la suppression',
+          label: errorMessage,
           icon: 'AlertTriangle',
           color: '#ef4444'
         });
@@ -127,6 +138,13 @@ function Entity() {
       code: entite.code,
       libelle: entite.libelle
     });
+    
+    showToast({
+      label: `Modification de l'entité "${entite.libelle}"`,
+      icon: 'Edit',
+      color: theme.colors.primary
+    });
+    
     window.scrollTo(0, document.body.scrollHeight);
   };
 
