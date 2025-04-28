@@ -13,16 +13,24 @@ import { InvoiceLinesList } from '../../components/invoice/InvoiceLinesList';
 import { FileUploadDialog } from '../../components/invoice/FileUploadDialog';
 import type { InvoiceFormData, InvoiceLineFormData, Invoice } from '../../types/invoice';
 
+// Clé pour le localStorage utilisée dans AddCashClosing
+const DRAFT_FERMETURE_KEY = 'draftFermetureCaisse';
+
 function NewInvoice() {
   const navigate = useNavigate();
   const location = useLocation();
   const editMode = location.state?.editMode || false;
+  const returnToEditMode = location.state?.editMode;
   const editingInvoice = location.state?.invoice as Invoice | undefined;
+  const selectedEntiteId = location.state?.selectedEntiteId;
+  const selectedDate = location.state?.selectedDate;
+  const returnTo = location.state?.returnTo || '/finance/invoice';
+  const editingFermeture = location.state?.editingFermeture;
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [entites, setEntites] = useState<{ id: string; code: string; libelle: string; }[]>([]);
   const [tiers, setTiers] = useState<{ id: string; code: string; nom: string; }[]>([]);
-  const [modesPaiement, setModesPaiement] = useState<{ id: string; code: string; libelle: string; }[]>([]);
+  const [modesPaiement, setModesPaiement] = useState<{ id: string; code: string; libelle: string; paiement_par_espece: boolean }[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showFileDialog, setShowFileDialog] = useState(false);
   const [invoiceLines, setInvoiceLines] = useState([]);
@@ -33,10 +41,10 @@ function NewInvoice() {
   const [loadingLines, setLoadingLines] = useState(false);
   const [editingLine, setEditingLine] = useState<InvoiceLine | null>(null);
   const [formData, setFormData] = useState<InvoiceFormData>({
-    entite_id: editingInvoice?.entite_id || '',
+    entite_id: editingInvoice?.entite_id || selectedEntiteId || '',
     tiers_id: editingInvoice?.tiers_id || '',
     numero_document: editingInvoice?.numero_document || '',
-    date_facture: editingInvoice?.date_facture || new Date().toISOString().split('T')[0],
+    date_facture: editingInvoice?.date_facture || selectedDate || new Date().toISOString().split('T')[0],
     montant_ht: editingInvoice?.montant_ht.toString() || '',
     montant_tva: editingInvoice?.montant_tva.toString() || '',
     montant_ttc: editingInvoice?.montant_ttc.toString() || '',
@@ -426,7 +434,25 @@ function NewInvoice() {
         color: '#10b981'
       });
 
-      navigate('/finance/invoice');
+      // Si on revient à la page de fermeture de caisse, on ne supprime pas le brouillon
+      // pour pouvoir restaurer l'état du formulaire et on passe les informations nécessaires
+      if (returnTo === '/finance/add-cash-closing') {
+        console.log('Retour vers AddCashClosing avec state:', {
+          returnTo,
+          editingFermeture,
+          editMode: returnToEditMode
+        });
+        
+        navigate(returnTo, {
+          state: {
+            returnTo,
+            editingFermeture,
+            editMode: returnToEditMode !== undefined ? returnToEditMode : location.state?.editMode
+          }
+        });
+      } else {
+        navigate(returnTo);
+      }
     } catch (error) {
       console.error('Erreur:', error);
       showToast({
@@ -467,6 +493,7 @@ function NewInvoice() {
                 fontSize: '0.875rem'
               }}
               required
+              disabled={!!selectedEntiteId}
             >
               <option value="">Sélectionner un restaurant</option>
               {filteredEntites.map(entite => (
@@ -484,6 +511,8 @@ function NewInvoice() {
               value={formData.date_facture}
               onChange={handleInputChange}
               required
+              readOnly={!!selectedDate}
+              style={selectedDate ? { backgroundColor: '#f3f4f6' } : {}}
             />
           </FormField>
 
@@ -631,7 +660,7 @@ function NewInvoice() {
               type="button"
               icon="X"
               color={theme.colors.secondary}
-              onClick={() => navigate('/finance/invoice')}
+              onClick={() => navigate(returnTo)}
             />
             <Button
               label="Enregistrer"

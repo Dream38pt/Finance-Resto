@@ -6,6 +6,8 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { theme } from '../../theme';
 import { usePaymentMethods } from '../../hooks/usePaymentMethods';
 
+interface PaymentMethodsProps {}
+
 function PaymentMethods() {
   const {
     paymentMethods,
@@ -64,12 +66,13 @@ function PaymentMethods() {
               <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Libellé</th>
               <th style={{ textAlign: 'right', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Ordre</th>
               <th style={{ textAlign: 'center', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Actif</th>
+              <th style={{ textAlign: 'center', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Paiement en espèces</th>
             </tr>
           </thead>
           <tbody>
             {paymentMethods.length === 0 ? (
               <tr>
-                <td colSpan={5} style={{ padding: '8px', textAlign: 'center', fontSize: '0.875rem' }}>
+                <td colSpan={6} style={{ padding: '8px', textAlign: 'center', fontSize: '0.875rem' }}>
                   Aucun mode de paiement trouvé.
                 </td>
               </tr>
@@ -136,6 +139,14 @@ function PaymentMethods() {
                     style={{ cursor: 'pointer' }}
                   />
                 </td>
+                <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'center' }}>
+                  <input
+                    type="checkbox"
+                    checked={method.paiement_par_espece}
+                    onChange={() => handleToggleCashPayment(method)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -190,6 +201,19 @@ function PaymentMethods() {
                   style={{ cursor: 'pointer' }}
                 />
                 <label>Actif</label>
+              </div>
+            </FormField>
+
+            <FormField>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="checkbox"
+                  name="paiement_par_espece"
+                  checked={formData.paiement_par_espece}
+                  onChange={(e) => setFormData({ ...formData, paiement_par_espece: e.target.checked })}
+                  style={{ cursor: 'pointer' }}
+                />
+                <label>Paiement en espèces</label>
               </div>
             </FormField>
 

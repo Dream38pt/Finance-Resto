@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Finance from './pages/Finance';
 import Profile from './pages/Profile';
-import { BudgetView, BudgetCF, Invoice, NewInvoice } from './pages/finance';
+import { BudgetView, BudgetCF, Invoice, NewInvoice, AddCashClosing } from './pages/finance';
 import RevenueTracking from './pages/finance/RevenueTracking';
+import CashClosing from './pages/finance/CashClosing';
 import Login from './pages/Login';
 import Settings from './pages/Settings';
 import Budget from './pages/finance/Budget';
@@ -45,6 +46,8 @@ function App() {
                 <Route path="dashboard" element={<div>Tableau de bord</div>} />
                 <Route path="invoice" element={<Invoice />} />
                 <Route path="revenue" element={<RevenueTracking />} />
+                <Route path="cash-closing" element={<CashClosing />} />
+                <Route path="add-cash-closing" element={<AddCashClosing />} />
                 <Route path="expenses" element={<div>Dépenses</div>} />
                 <Route path="costs" element={<div>Coûts</div>} />
                 <Route path="analytics" element={<div>Analyses</div>} />

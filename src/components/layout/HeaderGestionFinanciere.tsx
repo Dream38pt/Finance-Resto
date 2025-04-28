@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, ChevronLeft, ChevronRight, Home, Calculator, Eye, FileText, Receipt, BarChart2, LogOut } from 'lucide-react';
+import { Menu, ChevronLeft, ChevronRight, Home, Calculator, Eye, FileText, Receipt, BarChart2, LogOut, DollarSign } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
@@ -51,6 +51,10 @@ export function HeaderGestionFinanciere({ title }: HeaderGestionFinanciereProps)
           <Link to="/finance/revenue" className={styles.link}>
             <BarChart2 size={18} className={styles.icon} />
             <span className={styles.linkText}>Suivi CA Réel</span>
+          </Link>
+          <Link to="/finance/cash-closing" className={styles.link}>
+            <DollarSign size={18} className={styles.icon} />
+            <span className={styles.linkText}>Fermeture Caisse Jour</span>
           </Link>
           <div className={styles.separator} />
           <Link to="/finance/budget" className={styles.link}>

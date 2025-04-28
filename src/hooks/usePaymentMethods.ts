@@ -15,7 +15,8 @@ export function usePaymentMethods() {
     code: '',
     libelle: '',
     ordre_affichage: '0',
-    actif: true
+    actif: true,
+    paiement_par_espece: false
   };
 
   const [formData, setFormData] = useState<PaymentMethodFormData>(defaultFormData);
@@ -48,7 +49,8 @@ export function usePaymentMethods() {
         code: formData.code,
         libelle: formData.libelle,
         ordre_affichage: parseInt(formData.ordre_affichage),
-        actif: formData.actif
+        actif: formData.actif,
+        paiement_par_espece: formData.paiement_par_espece
       };
 
       let data, error;
@@ -139,6 +141,33 @@ export function usePaymentMethods() {
     }
   };
 
+  const handleToggleCashPayment = async (method: PaymentMethod) => {
+    try {
+      const { error } = await supabase
+        .from('fin_mode_paiement')
+        .update({ paiement_par_espece: !method.paiement_par_espece })
+        .eq('id', method.id);
+
+      if (error) throw error;
+
+      setPaymentMethods(prev => prev.map(m => 
+        m.id === method.id ? { ...m, paiement_par_espece: !m.paiement_par_espece } : m
+      ));
+
+      showToast({
+        label: `Mode de paiement ${!method.paiement_par_espece ? 'défini comme paiement en espèces' : 'défini comme paiement non-espèces'}`,
+        icon: 'Check',
+        color: '#10b981'
+      });
+    } catch (err) {
+      showToast({
+        label: err instanceof Error ? err.message : 'Erreur lors de la modification',
+        icon: 'AlertTriangle',
+        color: '#ef4444'
+      });
+    }
+  };
+
   return {
     paymentMethods,
     loading,
@@ -152,6 +181,7 @@ export function usePaymentMethods() {
     handleSubmit,
     handleDelete,
     handleToggleActive,
+    handleToggleCashPayment,
     defaultFormData
   };
 }
