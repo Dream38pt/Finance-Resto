@@ -1,16 +1,16 @@
 import React from 'react';
-import { Menu, ChevronLeft, ChevronRight, Home, Calculator, Eye, FileText, Receipt, BarChart2, LogOut, DollarSign, Landmark } from 'lucide-react';
+import { Menu, ChevronLeft, ChevronRight, Home, LogOut, Landmark, CreditCard, ArrowUpDown, Upload, Settings } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../contexts/ToastContext';
-import styles from './HeaderGestionFinanciere.module.css';
+import styles from './HeaderGestionBancaire.module.css';
 
-interface HeaderGestionFinanciereProps {
+interface HeaderGestionBancaireProps {
   title?: string;
 }
 
-export function HeaderGestionFinanciere({ title }: HeaderGestionFinanciereProps) {
+export function HeaderGestionBancaire({ title }: HeaderGestionBancaireProps) {
   const { isExpanded, toggleMenu } = useMenu();
   const { showToast } = useToast();
   
@@ -36,42 +36,50 @@ export function HeaderGestionFinanciere({ title }: HeaderGestionFinanciereProps)
       <div className={styles.container}>
         <div className={styles.brand}>
           <Menu size={24} className={styles.icon} />
-          <h1 className={styles.title}>Gestion Financière</h1>
+          <h1 className={styles.title}>Gestion Bancaire</h1>
         </div>
         <nav className={styles.nav}>
           <Link to="/" className={styles.link}>
             <Home size={18} className={styles.icon} />
             <span className={styles.linkText}>Accueil</span>
           </Link>
+          
           <div className={styles.separator} />
-          <Link to="/finance/invoice" className={styles.link}>
-            <Receipt size={18} className={styles.icon} />
-            <span className={styles.linkText}>Saisie Factures</span>
-          </Link>
-          <Link to="/finance/revenue" className={styles.link}>
-            <BarChart2 size={18} className={styles.icon} />
-            <span className={styles.linkText}>Suivi CA Réel</span>
-          </Link>
-          <Link to="/finance/cash-closing" className={styles.link}>
-            <DollarSign size={18} className={styles.icon} />
-            <span className={styles.linkText}>Fermeture Caisse Jour</span>
-          </Link>
-          <Link to="/bank" className={styles.link}>
+          
+          <Link to="/bank/accounts" className={styles.link}>
             <Landmark size={18} className={styles.icon} />
-            <span className={styles.linkText}>Gestion Bancaire</span>
+            <span className={styles.linkText}>Comptes bancaires</span>
           </Link>
+          
+          <Link to="/bank/movements" className={styles.link}>
+            <ArrowUpDown size={18} className={styles.icon} />
+            <span className={styles.linkText}>Mouvements bancaires</span>
+          </Link>
+          
           <div className={styles.separator} />
-          <Link to="/finance/budget" className={styles.link}>
-            <Calculator size={18} className={styles.icon} />
-            <span className={styles.linkText}>Budget CA</span>
+          
+          <Link to="/bank/import" className={styles.link}>
+            <Upload size={18} className={styles.icon} />
+            <span className={styles.linkText}>Import relevés</span>
           </Link>
-          <Link to="/finance/budget-cf" className={styles.link}>
-            <FileText size={18} className={styles.icon} />
-            <span className={styles.linkText}>Budget CF</span>
+          
+          <Link to="/bank/cards" className={styles.link}>
+            <CreditCard size={18} className={styles.icon} />
+            <span className={styles.linkText}>Cartes bancaires</span>
           </Link>
-          <Link to="/finance/budget-view" className={styles.link}>
-            <Eye size={18} className={styles.icon} />
-            <span className={styles.linkText}>Visu du Budget CA</span>
+          
+          <div className={styles.separator} />
+          
+          <Link to="/bank/settings" className={styles.link}>
+            <Settings 
+              size={18} 
+              className={styles.icon} 
+            />
+            <span 
+              className={styles.linkText}
+            >
+              Paramètres
+            </span>
           </Link>
         </nav>
         <button 

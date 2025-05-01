@@ -39,6 +39,17 @@ export function BudgetTable({
   const groupedBudgets = Object.values(budgetsByDesignation)
     .sort((a, b) => a.ordre_affichage - b.ordre_affichage);
 
+  // Calculer les totaux par mois
+  const monthlyTotals = Array(12).fill(0);
+  groupedBudgets.forEach(budget => {
+    budget.montants.forEach((montant, index) => {
+      monthlyTotals[index] += montant;
+    });
+  });
+
+  // Calculer le total global
+  const grandTotal = monthlyTotals.reduce((sum, montant) => sum + montant, 0);
+
   return (
     <table style={{ width: '100%', borderCollapse: 'collapse', whiteSpace: 'nowrap' }}>
       <thead>
@@ -50,6 +61,7 @@ export function BudgetTable({
           {mois.map((moisNom, index) => (
             <th key={index} style={{ textAlign: 'right', padding: '4px', borderBottom: '2px solid #e5e7eb', fontSize: '0.75rem', width: '85px' }}>{moisNom}</th>
           ))}
+          <th style={{ textAlign: 'right', padding: '4px', borderBottom: '2px solid #e5e7eb', fontSize: '0.75rem', width: '85px', backgroundColor: '#f3f4f6' }}>Total</th>
         </tr>
       </thead>
       <tbody>
@@ -103,8 +115,48 @@ export function BudgetTable({
                 {montant.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}
               </td>
             ))}
+            <td style={{ padding: '4px', borderBottom: '1px solid #e5e7eb', fontSize: '0.75rem', textAlign: 'right', backgroundColor: '#f3f4f6', fontWeight: 'bold' }}>
+              {budget.montants.reduce((sum, montant) => sum + montant, 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}
+            </td>
           </tr>
         ))}
+        {groupedBudgets.length > 0 && (
+          <tr>
+            <td colSpan={4} style={{ 
+              padding: '8px', 
+              borderTop: '2px solid #e5e7eb',
+              borderBottom: '2px solid #e5e7eb',
+              fontSize: '0.875rem',
+              fontWeight: 'bold', 
+              textAlign: 'right'
+            }}>
+              Total :
+            </td>
+            {monthlyTotals.map((total, index) => (
+              <td key={index} style={{ 
+                padding: '4px', 
+                borderTop: '2px solid #e5e7eb',
+                borderBottom: '2px solid #e5e7eb',
+                fontSize: '0.75rem', 
+                fontWeight: 'bold',
+                textAlign: 'right' 
+              }}>
+                {total.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}
+              </td>
+            ))}
+            <td style={{ 
+              padding: '4px', 
+              borderTop: '2px solid #e5e7eb',
+              borderBottom: '2px solid #e5e7eb',
+              fontSize: '0.75rem', 
+              fontWeight: 'bold',
+              textAlign: 'right',
+              backgroundColor: '#f3f4f6'
+            }}>
+              {grandTotal.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );

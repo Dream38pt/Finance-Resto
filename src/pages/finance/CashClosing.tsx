@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { PageSection } from '../../components/layout/page-layout';
 import { Form, FormField, FormInput, FormActions } from '../../components/ui/form';
 import { Button } from '../../components/ui/button';
-import { Pencil, Trash2, Check, Plus } from 'lucide-react';
+import { Pencil, Trash2, Check, Plus, Lock } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../contexts/ToastContext';
 import { theme } from '../../theme';
 import { useNavigate } from 'react-router-dom';
+
+const DRAFT_FERMETURE_KEY = 'draftFermetureCaisse';
 
 interface FermCaisse {
   id: string;
@@ -147,6 +149,21 @@ function CashClosing() {
     });
   };
 
+  const handleAddNew = () => {
+    // Supprimer le brouillon existant pour éviter de restaurer des données
+    localStorage.removeItem(DRAFT_FERMETURE_KEY);
+    
+    // Naviguer vers la page d'ajout avec un state vide
+    navigate('/finance/add-cash-closing', {
+      state: {
+        editMode: false,
+        fermeture: null,
+        editingFermeture: null,
+        isNewEntry: true // Indicateur spécial pour une nouvelle entrée
+      }
+    });
+  };
+
   const handleValidate = async (fermeture: FermCaisse) => {
     try {
       const { error } = await supabase
@@ -277,7 +294,7 @@ function CashClosing() {
           label="Ajouter une fermeture"
           icon="Plus"
           color={theme.colors.primary}
-          onClick={() => navigate('/finance/add-cash-closing')}
+          onClick={handleAddNew}
         />
       </div>
 
@@ -327,7 +344,7 @@ function CashClosing() {
                           }}
                           title="Validé"
                         >
-                          <Check size={16} />
+                          <Lock size={16} />
                         </button>
                       ) : ( 
                         <>
@@ -379,12 +396,12 @@ function CashClosing() {
                   </td>
                   <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'right' }}>
                     {fermeture.depot_banque_theorique 
-                      ? fermeture.depot_banque_theorique.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) 
+                     ? fermeture.depot_banque_theorique.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
                       : '-'}
                   </td>
                   <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'right' }}>
                     {fermeture.depot_banque_reel 
-                      ? fermeture.depot_banque_reel.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) 
+                     ? fermeture.depot_banque_reel.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
                       : '-'}
                   </td>
                   <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'center' }}>

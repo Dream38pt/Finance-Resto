@@ -173,6 +173,20 @@ function AddCashClosing() {
   const [formData, setFormData] = useState(() => {
     console.log('Initialisation de formData avec editingFermeture:', editingFermeture);
     
+    // Si c'est une nouvelle entrée explicite, utiliser des valeurs vides
+    if (location.state?.isNewEntry) {
+      console.log('Nouvelle entrée détectée, initialisation avec des valeurs vides');
+      return {
+        entite_id: '',
+        date_fermeture: new Date().toISOString().split('T')[0],
+        ca_ttc: '',
+        ca_ht: '',
+        commentaire: '',
+        depot_banque_theorique: '0',
+        depot_banque_reel: '0'
+      };
+    }
+    
     // Essayer de charger depuis le localStorage d'abord
     try {
       const savedDraft = localStorage.getItem(DRAFT_FERMETURE_KEY);
@@ -254,6 +268,13 @@ function AddCashClosing() {
   // Effet pour charger le brouillon au chargement initial du composant
   useEffect(() => {
     if (draftLoaded) return;
+    
+    // Si c'est une nouvelle entrée explicite, ne pas charger de brouillon
+    if (location.state?.isNewEntry) {
+      console.log('Nouvelle entrée, pas de chargement de brouillon');
+      setDraftLoaded(true);
+      return;
+    }
     
     // Charger le brouillon depuis le localStorage
     const draft = loadDraftFromStorage();
@@ -559,7 +580,7 @@ function AddCashClosing() {
     // Mettre à jour le formulaire
     setFormData(prev => ({
       ...prev,
-      depot_banque_theorique: depotTheorique.toString()
+      depot_banque_theorique: depotTheorique.toFixed(2)
     }));
   };
 
@@ -622,8 +643,15 @@ function AddCashClosing() {
     setMultibancs(prev => prev.filter(item => item !== multibanc));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (eOrValidate: React.FormEvent | boolean) => {
+    // Détermine si on valide la fermeture ou si on l'enregistre simplement
+    const validate = typeof eOrValidate === 'boolean' ? eOrValidate : false;
+    
+    // Si c'est un événement de formulaire, empêcher le comportement par défaut
+    if (typeof eOrValidate !== 'boolean') {
+      eOrValidate.preventDefault();
+    }
+    
     setLoading(true);
 
     try {
@@ -635,7 +663,7 @@ function AddCashClosing() {
         commentaire: formData.commentaire || null,
         depot_banque_theorique: parseFloat(formData.depot_banque_theorique) || null,
         depot_banque_reel: parseFloat(formData.depot_banque_reel) || null,
-        est_valide: false
+        est_valide: validate
       };
 
       let fermCaisseId: string;
@@ -1209,7 +1237,10 @@ function AddCashClosing() {
               onChange={handleInputChange}
               step="0.01"
               readOnly
-              style={{ backgroundColor: '#f3f4f6' }}
+              style={{ 
+                backgroundColor: '#f3f4f6',
+                textAlign: 'right'
+              }}
             />
           </FormField>
 
@@ -1221,6 +1252,7 @@ function AddCashClosing() {
               onChange={handleInputChange}
               step="0.01"
               min="0"
+              style={{ textAlign: 'right' }}
             />
           </FormField>
         </div>
@@ -1243,7 +1275,15 @@ function AddCashClosing() {
           type="button"
           icon="Save"
           color={theme.colors.primary}
-          onClick={handleSubmit}
+          onClick={() => handleSubmit(false)}
+          disabled={loading}
+        />
+        <Button
+          label="Valider"
+          type="button"
+          icon="Lock"
+          color={theme.colors.success}
+          onClick={() => handleSubmit(true)}
           disabled={loading}
         />
       </div>

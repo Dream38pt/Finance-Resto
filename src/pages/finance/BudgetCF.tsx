@@ -129,7 +129,7 @@ function BudgetCF() {
               onEdit={(budget) => {
                 setEditingBudget(budget);
                 setFormData({
-                  entite_id: selectedEntite,
+                  entite_id: selectedEntite, // Utiliser l'entité sélectionnée
                   annee: selectedYear,
                   mois: 1,
                   designation: budget.designation,

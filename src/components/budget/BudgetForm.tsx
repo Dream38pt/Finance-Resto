@@ -42,7 +42,33 @@ export function BudgetForm({
 
   return (
     <Form size={70} onSubmit={onSubmit}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '1rem', marginBottom: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '1rem', marginBottom: '1rem' }}>
+        <FormField label="Restaurant" required>
+          <select
+            name="entite_id"
+            value={formData.entite_id}
+            onChange={handleInputChange}
+            style={{
+              width: '100%',
+              padding: '0.625rem 0.75rem',
+              border: '2px solid var(--color-secondary)',
+              borderRadius: '0.375rem',
+              backgroundColor: 'var(--color-white)',
+              color: 'var(--color-text)',
+              fontSize: '0.875rem'
+            }}
+            required
+            disabled={!!formData.entite_id} // Désactivé si déjà rempli
+          >
+            <option value="">Sélectionner un restaurant</option>
+            {entites.map(entite => (
+              <option key={entite.id} value={entite.id}>
+                {entite.code} - {entite.libelle}
+              </option>
+            ))}
+          </select>
+        </FormField>
+
         <FormField label="Désignation" required>
           <FormInput
             type="text"
@@ -53,7 +79,7 @@ export function BudgetForm({
             placeholder="Nom du coût fixe"
           />
         </FormField>
-
+        
         <FormField label="Catégorie d'achat">
           <select
             name="categorie_achat_id"

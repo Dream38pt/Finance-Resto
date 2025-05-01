@@ -6,19 +6,28 @@ import { ImportFacturesUploader } from '../../components/invoice/ImportFacturesU
 
 function Import() {
   const [showImportDialog, setShowImportDialog] = useState(false);
+  const [showImportBCPDialog, setShowImportBCPDialog] = useState(false);
 
   return (
     <PageSection
       title="Import de données"
       description="Importez des données dans le système"
     >
-      <div style={{ marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
         <Button
           label="Import Historique des facures achats"
           icon="Upload"
           color={theme.colors.primary}
           onClick={() => {
             setShowImportDialog(true);
+          }}
+        />
+        <Button
+          label="Import données bancaire BCP"
+          icon="FileSpreadsheet"
+          color={theme.colors.primary}
+          onClick={() => {
+            setShowImportBCPDialog(true);
           }}
         />
       </div>

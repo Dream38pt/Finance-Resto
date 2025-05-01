@@ -16,13 +16,13 @@ export function useBudgetCF() {
   const { showToast } = useToast();
 
   const defaultFormData: BudgetFormData = {
-    entite_id: '',
+    entite_id: '', // Sera rempli avec l'entité sélectionnée
     annee: new Date().getFullYear(),
     mois: new Date().getMonth() + 1,
     designation: '',
     montants: Array(12).fill('0'),
-    ordre_affichage: '0',
-    categorie_achat_id: ''
+    ordre_affichage: 0,
+    categorie_achat_id: null
   };
 
   const [formData, setFormData] = useState<BudgetFormData>(defaultFormData);
@@ -68,7 +68,7 @@ export function useBudgetCF() {
   const handleDisplayClick = async () => {
     if (!selectedEntite) {
       showToast({
-        label: 'Veuillez sélectionner un restaurant',
+        label: 'Veuillez sélectionner un restaurant dans la section filtre',
         icon: 'AlertTriangle',
         color: '#f59e0b'
       });
@@ -97,14 +97,27 @@ export function useBudgetCF() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Utiliser l'entité sélectionnée si le formulaire n'en a pas
+    const entiteId = formData.entite_id || selectedEntite;
+    
+    if (!entiteId) {
+      showToast({
+        label: 'Veuillez sélectionner un restaurant',
+        icon: 'AlertTriangle',
+        color: '#f59e0b'
+      });
+      return;
+    }
+
     try {
       const promises = formData.montants.map((montant, index) => ({
-        entite_id: formData.entite_id,
+        entite_id: entiteId,
         annee: formData.annee,
         mois: index + 1,
         designation: formData.designation,
         montant: parseFloat(montant),
-        ordre_affichage: parseInt(formData.ordre_affichage),
+        ordre_affichage: parseInt(String(formData.ordre_affichage)),
         categorie_achat_id: formData.categorie_achat_id || null
       }));
 
@@ -144,7 +157,9 @@ export function useBudgetCF() {
       setShowForm(false);
       setFormData(defaultFormData);
       // Recharger les données après modification
-      await handleDisplayClick();
+      if (selectedEntite) {
+        await handleDisplayClick();
+      }
     } catch (err) {
       showToast({
         label: err instanceof Error ? err.message : `Erreur lors de la ${editingBudget ? 'modification' : 'création'}`,

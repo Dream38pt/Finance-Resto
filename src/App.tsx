@@ -2,10 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Finance from './pages/Finance';
+import Bank from './pages/Bank';
 import Profile from './pages/Profile';
 import { BudgetView, BudgetCF, Invoice, NewInvoice, AddCashClosing } from './pages/finance';
 import RevenueTracking from './pages/finance/RevenueTracking';
 import CashClosing from './pages/finance/CashClosing';
+import { ImportBankStatements, BankSettings, ImportFormats } from './pages/bank';
 import Login from './pages/Login';
 import Settings from './pages/Settings';
 import Budget from './pages/finance/Budget';
@@ -56,6 +58,20 @@ function App() {
                 <Route path="budget-view" element={<BudgetView />} />
                 <Route path="nouvelle-facture" element={<NewInvoice />} />
                 <Route path="forecasts" element={<div>Prévisions</div>} />
+              </Route>
+              <Route path="/bank" element={
+                <ProtectedRoute>
+                  <Bank />
+                </ProtectedRoute>
+              }
+              >
+                <Route path="accounts" element={<div>Comptes bancaires</div>} />
+                <Route path="cards" element={<div>Cartes bancaires</div>} />
+                <Route path="movements" element={<div>Mouvements bancaires</div>} />
+                <Route path="import" element={<ImportBankStatements />} />
+                <Route path="settings" element={<BankSettings />}>
+                  <Route path="import-formats" element={<ImportFormats />} />
+                </Route>
               </Route>
               <Route path="/profile" element={
                 <ProtectedRoute>
