@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Finance from './pages/Finance';
+import Employees from './pages/Employees';
 import Bank from './pages/Bank';
 import Profile from './pages/Profile';
 import { BudgetView, BudgetCF, Invoice, NewInvoice, AddCashClosing } from './pages/finance';
@@ -10,11 +11,11 @@ import CashClosing from './pages/finance/CashClosing';
 import { ImportBankStatements, BankSettings, ImportFormats, ImportProcessing, BankMovements } from './pages/bank';
 import Login from './pages/Login';
 import Settings from './pages/Settings';
+import { EmployeesList, Affectation } from './pages/employees';
 import Budget from './pages/finance/Budget';
 import Entity from './pages/settings/Entity';
 import BankAccounts from './pages/settings/BankAccounts';
 import BankMovementTypes from './pages/settings/BankMovementTypes';
-import Employees from './pages/settings/Employees';
 import Days from './pages/settings/Days';
 import Import from './pages/settings/Import';
 import TVA from './pages/settings/TVA';
@@ -74,6 +75,15 @@ function App() {
                   <Route path="import-processing" element={<ImportProcessing />} />
                 </Route>
               </Route>
+              <Route path="/employees" element={
+                <ProtectedRoute>
+                  <Employees />
+                </ProtectedRoute>
+              }>
+                <Route path="" element={<EmployeesList />} />
+                <Route path="list" element={<EmployeesList />} />
+                <Route path="affectation" element={<Affectation />} />
+              </Route>
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <Profile />
@@ -87,7 +97,6 @@ function App() {
                 <Route path="entity" element={<Entity />} />
                 <Route path="bank-accounts" element={<BankAccounts />} />
                 <Route path="bank-movement-types" element={<BankMovementTypes />} />
-                <Route path="employees" element={<Employees />} />
                 <Route path="tva" element={<TVA />} />
                 <Route path="service-types" element={<ServiceTypes />} />
                 <Route path="payment-methods" element={<PaymentMethods />} />

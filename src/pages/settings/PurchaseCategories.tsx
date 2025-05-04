@@ -11,6 +11,9 @@ interface PurchaseCategory {
   id: string;
   libelle: string;
   fait_partie_cout_mp: boolean;
+  fait_partie_cout_boisson: boolean;
+  depenses_hors_cf: boolean;
+  depenses_cf: boolean;
   ordre_affichage: number;
   actif: boolean;
   created_at: string;
@@ -28,6 +31,9 @@ function PurchaseCategories() {
   const [formData, setFormData] = useState({
     libelle: '',
     fait_partie_cout_mp: false,
+    fait_partie_cout_boisson: false,
+    depenses_hors_cf: false,
+    depenses_cf: false,
     ordre_affichage: 0,
     actif: true
   });
@@ -48,14 +54,30 @@ function PurchaseCategories() {
       if (editingCategory) {
         ({ data, error } = await supabase
           .from('fin_categorie_achat')
-          .update(formData)
+          .update({
+            libelle: formData.libelle,
+            fait_partie_cout_mp: formData.fait_partie_cout_mp,
+            fait_partie_cout_boisson: formData.fait_partie_cout_boisson,
+            depenses_hors_cf: formData.depenses_hors_cf,
+            depenses_cf: formData.depenses_cf,
+            ordre_affichage: formData.ordre_affichage,
+            actif: formData.actif
+          })
           .eq('id', editingCategory.id)
           .select()
           .single());
       } else {
         ({ data, error } = await supabase
           .from('fin_categorie_achat')
-          .insert([formData])
+          .insert([{
+            libelle: formData.libelle,
+            fait_partie_cout_mp: formData.fait_partie_cout_mp,
+            fait_partie_cout_boisson: formData.fait_partie_cout_boisson,
+            depenses_hors_cf: formData.depenses_hors_cf,
+            depenses_cf: formData.depenses_cf,
+            ordre_affichage: formData.ordre_affichage,
+            actif: formData.actif
+          }])
           .select()
           .single());
       }
@@ -83,6 +105,9 @@ function PurchaseCategories() {
       setFormData({
         libelle: '',
         fait_partie_cout_mp: false,
+        fait_partie_cout_boisson: false,
+        depenses_hors_cf: false,
+        depenses_cf: false,
         ordre_affichage: 0,
         actif: true
       });
@@ -153,6 +178,9 @@ function PurchaseCategories() {
     setFormData({
       libelle: category.libelle,
       fait_partie_cout_mp: category.fait_partie_cout_mp,
+      fait_partie_cout_boisson: category.fait_partie_cout_boisson,
+      depenses_hors_cf: category.depenses_hors_cf,
+      depenses_cf: category.depenses_cf,
       ordre_affichage: category.ordre_affichage,
       actif: category.actif
     });
@@ -230,7 +258,10 @@ function PurchaseCategories() {
             <tr>
               <th style={{ width: '80px', padding: '8px', borderBottom: '2px solid #e5e7eb' }}></th>
               <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Libellé</th>
+              <th style={{ textAlign: 'center', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Dépenses CF</th>
               <th style={{ textAlign: 'center', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Coût MP</th>
+              <th style={{ textAlign: 'center', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Coût Boisson</th>
+              <th style={{ textAlign: 'center', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Hors CF</th>
               <th style={{ textAlign: 'right', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Ordre</th>
               <th style={{ textAlign: 'center', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Actif</th>
             </tr>
@@ -238,7 +269,7 @@ function PurchaseCategories() {
           <tbody>
             {filteredCategories.length === 0 ? (
               <tr>
-                <td colSpan={5} style={{ padding: '8px', textAlign: 'center', fontSize: '0.875rem' }}>
+                <td colSpan={8} style={{ padding: '8px', textAlign: 'center', fontSize: '0.875rem' }}>
                   Aucune catégorie trouvée.
                 </td>
               </tr>
@@ -284,7 +315,34 @@ function PurchaseCategories() {
                 <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'center' }}>
                   <input
                     type="checkbox"
+                    checked={category.depenses_cf}
+                    onChange={() => handleEdit(category)}
+                    style={{ cursor: 'pointer' }}
+                    disabled
+                  />
+                </td>
+                <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'center' }}>
+                  <input
+                    type="checkbox"
                     checked={category.fait_partie_cout_mp}
+                    onChange={() => handleEdit(category)}
+                    style={{ cursor: 'pointer' }}
+                    disabled
+                  />
+                </td>
+                <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'center' }}>
+                  <input
+                    type="checkbox"
+                    checked={category.fait_partie_cout_boisson}
+                    onChange={() => handleEdit(category)}
+                    style={{ cursor: 'pointer' }}
+                    disabled
+                  />
+                </td>
+                <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'center' }}>
+                  <input
+                    type="checkbox"
+                    checked={category.depenses_hors_cf}
                     onChange={() => handleEdit(category)}
                     style={{ cursor: 'pointer' }}
                     disabled
@@ -339,12 +397,42 @@ function PurchaseCategories() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <input
                     type="checkbox"
+                    name="depenses_cf"
+                    checked={formData.depenses_cf}
+                    onChange={handleInputChange}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <label>Dépenses CF</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
                     name="fait_partie_cout_mp"
                     checked={formData.fait_partie_cout_mp}
                     onChange={handleInputChange}
                     style={{ cursor: 'pointer' }}
                   />
                   <label>Fait partie du coût matière première</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
+                    name="fait_partie_cout_boisson"
+                    checked={formData.fait_partie_cout_boisson}
+                    onChange={handleInputChange}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <label>Fait partie du coût boisson</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
+                    name="depenses_hors_cf"
+                    checked={formData.depenses_hors_cf}
+                    onChange={handleInputChange}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <label>Dépenses hors CF</label>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <input
@@ -371,6 +459,9 @@ function PurchaseCategories() {
                   setFormData({
                     libelle: '',
                     fait_partie_cout_mp: false,
+                    fait_partie_cout_boisson: false,
+                    depenses_hors_cf: false,
+                    depenses_cf: false,
                     ordre_affichage: 0,
                     actif: true
                   });

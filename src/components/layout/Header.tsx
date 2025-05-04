@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Home, Settings, Mail, ChevronLeft, ChevronRight, Wallet, LogOut, UserCircle } from 'lucide-react';
+import { Menu, Home, Settings, Mail, ChevronLeft, ChevronRight, Wallet, LogOut, UserCircle, Users } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
@@ -64,6 +64,10 @@ export function Header({ title }: HeaderProps) {
           <Link to="/finance" className={styles.link}>
             <Wallet size={20} className={styles.icon} />
             <span className={styles.linkText}>Gestion Financière</span>
+          </Link>
+          <Link to="/employees" className={styles.link}>
+            <Users size={20} className={styles.icon} />
+            <span className={styles.linkText}>Gestion Employés</span>
           </Link>
           <Link to="/contact" className={styles.link}>
             <Mail size={20} className={styles.icon} />

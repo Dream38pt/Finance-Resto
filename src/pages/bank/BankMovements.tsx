@@ -592,7 +592,6 @@ function BankMovements() {
                   <th style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Description</th>
                   <th style={{ textAlign: 'right', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Débit</th>
                   <th style={{ textAlign: 'right', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Crédit</th>
-                  <th style={{ textAlign: 'right', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>Solde</th>
                   <th style={{ textAlign: 'center', padding: '8px', borderBottom: '2px solid #e5e7eb', fontSize: '0.875rem' }}>N° Lettrage</th>
                 </tr>
               </thead>
@@ -621,9 +620,6 @@ function BankMovements() {
                     </td>
                     <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'right' }}>
                       {mouvement.valor > 0 ? mouvement.valor.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) : '-'}
-                    </td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'right' }}>
-                      {mouvement.saldo.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                     </td>
                     <td style={{ padding: '8px', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', textAlign: 'center' }}>
                       {mouvement.num_lettrage || '-'}
@@ -659,7 +655,7 @@ function BankMovements() {
                   }}>
                     {totals.credit.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                   </td>
-                  <td colSpan={2} style={{ padding: '8px', borderTop: '2px solid #e5e7eb' }}></td>
+                  <td style={{ padding: '8px', borderTop: '2px solid #e5e7eb' }}></td>
                 </tr>
               </tbody>
             </table>

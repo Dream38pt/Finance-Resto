@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Building, Wallet, ChevronLeft, ChevronRight, Home, Users, Coffee, Receipt, Calendar, Truck, Tags, CreditCard, ArrowLeftRight, Upload, LogOut } from 'lucide-react';
+import { Menu, Building, Wallet, ChevronLeft, ChevronRight, Home, Coffee, Receipt, Calendar, Truck, Tags, CreditCard, ArrowLeftRight, Upload, LogOut } from 'lucide-react';
 import { useMenu } from '../../contexts/MenuContext';
 import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
@@ -58,10 +58,6 @@ export function HeaderParametres({ title }: HeaderParametresProps) {
           <Link to="/settings/service-types" className={styles.link}>
             <Coffee size={18} className={styles.icon} />
             <span className={styles.linkText}>Type de service CA</span>
-          </Link>
-          <Link to="/settings/employees" className={styles.link}>
-            <Users size={18} className={styles.icon} />
-            <span className={styles.linkText}>Employés</span>
           </Link>
           <Link to="/settings/tva" className={styles.link}>
             <Receipt size={18} className={styles.icon} />
