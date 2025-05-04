@@ -205,19 +205,23 @@ function ImportFormats() {
 
   if (loading) {
     return (
-      <PageSection
-        title="Formats d'importation"
-        description="Chargement des données..."
-      />
+      <BankSettingsLayout>
+        <PageSection
+          title="Formats d'importation"
+          description="Chargement des données..."
+        />
+      </BankSettingsLayout>
     );
   }
 
   if (error) {
     return (
-      <PageSection
-        title="Formats d'importation"
-        description={`Erreur: ${error}`}
-      />
+      <BankSettingsLayout>
+        <PageSection
+          title="Formats d'importation"
+          description={`Erreur: ${error}`}
+        />
+      </BankSettingsLayout>
     );
   }
 
@@ -328,145 +332,145 @@ function ImportFormats() {
             </tbody>
           </table>
         </div>
-
-        {(showForm || editingFormat) && (
-          <PageSection
-            subtitle={editingFormat ? "Modifier un format d'importation" : "Nouveau format d'importation"}
-            description={editingFormat ? "Modifier les informations du format" : "Créer un nouveau format d'importation"}
-          >
-            <Form size={50} onSubmit={handleSubmit}>
-              <FormField label="Code" required>
-                <FormInput
-                  type="text"
-                  name="code"
-                  value={formData.code}
-                  onChange={handleInputChange}
-                  placeholder="bcp"
-                  required
-                />
-              </FormField>
-
-              <FormField label="Nom d'affichage" required>
-                <FormInput
-                  type="text"
-                  name="nom_affichage"
-                  value={formData.nom_affichage}
-                  onChange={handleInputChange}
-                  placeholder="Banco BCP (CSV)"
-                  required
-                />
-              </FormField>
-
-              <FormField label="Type de fichier" required>
-                <select
-                  name="type_fichier"
-                  value={formData.type_fichier}
-                  onChange={handleInputChange}
-                  style={{
-                    width: '100%',
-                    padding: '0.625rem 0.75rem',
-                    border: '2px solid var(--color-secondary)',
-                    borderRadius: '0.375rem',
-                    backgroundColor: 'var(--color-white)',
-                    color: 'var(--color-text)',
-                    fontSize: '0.875rem'
-                  }}
-                  required
-                >
-                  <option value="csv">CSV</option>
-                  <option value="xls">XLS</option>
-                  <option value="xlsx">XLSX</option>
-                </select>
-              </FormField>
-
-              <FormField label="Séparateur" description="Laissez vide pour les fichiers Excel">
-                <FormInput
-                  type="text"
-                  name="separateur"
-                  value={formData.separateur}
-                  onChange={handleInputChange}
-                  placeholder=";"
-                  maxLength={10}
-                />
-              </FormField>
-
-              <FormField label="Lignes à ignorer">
-                <FormInput
-                  type="number"
-                  name="sauter_lignes"
-                  value={formData.sauter_lignes}
-                  onChange={handleInputChange}
-                  min="0"
-                  placeholder="0"
-                />
-              </FormField>
-
-              <FormField label="Fonction de parsing" description="Nom de la fonction JavaScript à utiliser pour le parsing">
-                <FormInput
-                  type="text"
-                  name="parsing_function"
-                  value={formData.parsing_function}
-                  onChange={handleInputChange}
-                  placeholder="parseBCP"
-                />
-              </FormField>
-
-              <FormField label="Commentaires" description="Informations supplémentaires sur ce format">
-                <FormInput
-                  type="text"
-                  name="commentaires"
-                  value={formData.commentaires}
-                  onChange={handleInputChange}
-                  placeholder="Commentaires (40 caractères max)"
-                  maxLength={40}
-                />
-              </FormField>
-
-              <FormField>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <input
-                    type="checkbox"
-                    name="actif"
-                    checked={formData.actif}
-                    onChange={handleInputChange}
-                    style={{ cursor: 'pointer' }}
-                  />
-                  <label>Actif</label>
-                </div>
-              </FormField>
-
-              <FormActions>
-                <Button
-                  label="Annuler"
-                  type="button"
-                  icon="X"
-                  color={theme.colors.secondary}
-                  onClick={() => {
-                    setShowForm(false);
-                    setEditingFormat(null);
-                    setFormData({
-                      code: '',
-                      nom_affichage: '',
-                      type_fichier: 'csv',
-                      separateur: '',
-                      sauter_lignes: '0',
-                      parsing_function: '',
-                      commentaires: '',
-                      actif: true
-                    });
-                  }}
-                />
-                <Button
-                  label={editingFormat ? "Modifier" : "Créer"}
-                  type="submit"
-                  icon={editingFormat ? "Save" : "Plus"}
-                  color={theme.colors.primary}
-                />
-              </FormActions>
-            </Form>
-          </PageSection>
-        )}
       </PageSection>
+
+      {(showForm || editingFormat) && (
+        <PageSection
+          subtitle={editingFormat ? "Modifier un format d'importation" : "Nouveau format d'importation"}
+          description={editingFormat ? "Modifier les informations du format" : "Créer un nouveau format d'importation"}
+        >
+          <Form size={50} onSubmit={handleSubmit}>
+            <FormField label="Code" required>
+              <FormInput
+                type="text"
+                name="code"
+                value={formData.code}
+                onChange={handleInputChange}
+                placeholder="bcp"
+                required
+              />
+            </FormField>
+
+            <FormField label="Nom d'affichage" required>
+              <FormInput
+                type="text"
+                name="nom_affichage"
+                value={formData.nom_affichage}
+                onChange={handleInputChange}
+                placeholder="Banco BCP (CSV)"
+                required
+              />
+            </FormField>
+
+            <FormField label="Type de fichier" required>
+              <select
+                name="type_fichier"
+                value={formData.type_fichier}
+                onChange={handleInputChange}
+                style={{
+                  width: '100%',
+                  padding: '0.625rem 0.75rem',
+                  border: '2px solid var(--color-secondary)',
+                  borderRadius: '0.375rem',
+                  backgroundColor: 'var(--color-white)',
+                  color: 'var(--color-text)',
+                  fontSize: '0.875rem'
+                }}
+                required
+              >
+                <option value="csv">CSV</option>
+                <option value="xls">XLS</option>
+                <option value="xlsx">XLSX</option>
+              </select>
+            </FormField>
+
+            <FormField label="Séparateur" description="Laissez vide pour les fichiers Excel">
+              <FormInput
+                type="text"
+                name="separateur"
+                value={formData.separateur}
+                onChange={handleInputChange}
+                placeholder=";"
+                maxLength={10}
+              />
+            </FormField>
+
+            <FormField label="Lignes à ignorer">
+              <FormInput
+                type="number"
+                name="sauter_lignes"
+                value={formData.sauter_lignes}
+                onChange={handleInputChange}
+                min="0"
+                placeholder="0"
+              />
+            </FormField>
+
+            <FormField label="Fonction de parsing" description="Nom de la fonction JavaScript à utiliser pour le parsing">
+              <FormInput
+                type="text"
+                name="parsing_function"
+                value={formData.parsing_function}
+                onChange={handleInputChange}
+                placeholder="parseBCP"
+              />
+            </FormField>
+
+            <FormField label="Commentaires" description="Informations supplémentaires sur ce format">
+              <FormInput
+                type="text"
+                name="commentaires"
+                value={formData.commentaires}
+                onChange={handleInputChange}
+                placeholder="Commentaires (40 caractères max)"
+                maxLength={40}
+              />
+            </FormField>
+
+            <FormField>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="checkbox"
+                  name="actif"
+                  checked={formData.actif}
+                  onChange={handleInputChange}
+                  style={{ cursor: 'pointer' }}
+                />
+                <label>Actif</label>
+              </div>
+            </FormField>
+
+            <FormActions>
+              <Button
+                label="Annuler"
+                type="button"
+                icon="X"
+                color={theme.colors.secondary}
+                onClick={() => {
+                  setShowForm(false);
+                  setEditingFormat(null);
+                  setFormData({
+                    code: '',
+                    nom_affichage: '',
+                    type_fichier: 'csv',
+                    separateur: '',
+                    sauter_lignes: '0',
+                    parsing_function: '',
+                    commentaires: '',
+                    actif: true
+                  });
+                }}
+              />
+              <Button
+                label={editingFormat ? "Modifier" : "Créer"}
+                type="submit"
+                icon={editingFormat ? "Save" : "Plus"}
+                color={theme.colors.primary}
+              />
+            </FormActions>
+          </Form>
+        </PageSection>
+      )}
     </BankSettingsLayout>
   );
 }

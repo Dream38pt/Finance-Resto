@@ -17,9 +17,9 @@ export function BankSettingsLayout({ children, className = '' }: BankSettingsLay
   return (
     <div className={`${styles.container} ${isExpanded ? styles.expanded : styles.collapsed} ${className}`}>
       <HeaderGestionBancaireParam />
-      <main className={styles.main}>
+      <div className={styles.main}>
         {children}
-      </main>
+      </div>
       <ToastContainer toasts={toasts} onClose={closeToast} />
     </div>
   );

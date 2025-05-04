@@ -7,7 +7,7 @@ import Profile from './pages/Profile';
 import { BudgetView, BudgetCF, Invoice, NewInvoice, AddCashClosing } from './pages/finance';
 import RevenueTracking from './pages/finance/RevenueTracking';
 import CashClosing from './pages/finance/CashClosing';
-import { ImportBankStatements, BankSettings, ImportFormats } from './pages/bank';
+import { ImportBankStatements, BankSettings, ImportFormats, ImportProcessing, BankMovements } from './pages/bank';
 import Login from './pages/Login';
 import Settings from './pages/Settings';
 import Budget from './pages/finance/Budget';
@@ -65,12 +65,13 @@ function App() {
                 </ProtectedRoute>
               }
               >
-                <Route path="accounts" element={<div>Comptes bancaires</div>} />
+                <Route path="movements" element={<BankMovements />} />
                 <Route path="cards" element={<div>Cartes bancaires</div>} />
-                <Route path="movements" element={<div>Mouvements bancaires</div>} />
                 <Route path="import" element={<ImportBankStatements />} />
                 <Route path="settings" element={<BankSettings />}>
                   <Route path="import-formats" element={<ImportFormats />} />
+                  <Route path="bank-accounts" element={<BankAccounts />} />
+                  <Route path="import-processing" element={<ImportProcessing />} />
                 </Route>
               </Route>
               <Route path="/profile" element={
