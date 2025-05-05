@@ -235,13 +235,19 @@ function BankAccounts() {
 
   if (loading) {
     return (
-      <PageSection title="Comptes bancaires" description="Chargement des données..." />
+      <PageSection
+        title="Comptes bancaires"
+        description="Chargement des données..."
+      />
     );
   }
 
   if (error) {
     return (
-      <PageSection title="Comptes bancaires" description={`Erreur: ${error}`} />
+      <PageSection
+        title="Comptes bancaires"
+        description={`Erreur: ${error}`}
+      />
     );
   }
 

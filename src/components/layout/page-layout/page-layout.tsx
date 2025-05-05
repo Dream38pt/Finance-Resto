@@ -8,16 +8,17 @@ import styles from './page-layout.module.css';
 
 interface PageLayoutProps {
   children: ReactNode;
+  header?: ReactNode;
   className?: string;
 }
 
-export function PageLayout({ children, className = '' }: PageLayoutProps) {
+export function PageLayout({ children, header, className = '' }: PageLayoutProps) {
   const { isExpanded } = useMenu();
   const { toasts, closeToast } = useToast();
 
   return (
     <div className={`${styles.container} ${isExpanded ? styles.expanded : styles.collapsed} ${className}`}>
-      <Header />
+      {header || <Header />}
       <main className={`${styles.main}`}>
         {children}
       </main>

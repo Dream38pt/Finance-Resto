@@ -1,12 +1,13 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { SettingsLayout } from '../components/layout/settings-layout/settings-layout';
+import { PageLayout } from '../components/layout/page-layout';
+import { HeaderParametres } from '../components/layout/HeaderParametres';
 
 function Settings() {
   return (
-    <SettingsLayout>
+    <PageLayout header={<HeaderParametres />}>
       <Outlet />
-    </SettingsLayout>
+    </PageLayout>
   );
 }
 

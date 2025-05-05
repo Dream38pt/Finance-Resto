@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Finance from './pages/Finance';
 import Employees from './pages/Employees';
@@ -8,10 +8,13 @@ import Profile from './pages/Profile';
 import { BudgetView, BudgetCF, Invoice, NewInvoice, AddCashClosing } from './pages/finance';
 import RevenueTracking from './pages/finance/RevenueTracking';
 import CashClosing from './pages/finance/CashClosing';
-import { ImportBankStatements, BankSettings, ImportFormats, ImportProcessing, BankMovements } from './pages/bank';
+import { ImportBankStatements, BankMovements } from './pages/bank';
+import { ImportFormats, ImportProcessing } from './pages/bankSettings';
+import BankSettings from './pages/bankSettings';
+import FinanceSettings from './pages/financeSettings';
 import Login from './pages/Login';
 import Settings from './pages/Settings';
-import { EmployeesList, Affectation } from './pages/employees';
+import { EmployeesList, Affectation, EmployeesSettings } from './pages/employees';
 import Budget from './pages/finance/Budget';
 import Entity from './pages/settings/Entity';
 import BankAccounts from './pages/settings/BankAccounts';
@@ -69,11 +72,16 @@ function App() {
                 <Route path="movements" element={<BankMovements />} />
                 <Route path="cards" element={<div>Cartes bancaires</div>} />
                 <Route path="import" element={<ImportBankStatements />} />
-                <Route path="settings" element={<BankSettings />}>
-                  <Route path="import-formats" element={<ImportFormats />} />
-                  <Route path="bank-accounts" element={<BankAccounts />} />
-                  <Route path="import-processing" element={<ImportProcessing />} />
-                </Route>
+                <Route path="settings" element={<Navigate to="/bankSettings" replace />} />
+              </Route>
+              <Route path="/bankSettings" element={
+                <ProtectedRoute>
+                  <BankSettings />
+                </ProtectedRoute>
+              }>
+                <Route path="import-formats" element={<ImportFormats />} />
+                <Route path="bank-accounts" element={<BankAccounts />} />
+                <Route path="import-processing" element={<ImportProcessing />} />
               </Route>
               <Route path="/employees" element={
                 <ProtectedRoute>
@@ -83,7 +91,18 @@ function App() {
                 <Route path="" element={<EmployeesList />} />
                 <Route path="list" element={<EmployeesList />} />
                 <Route path="affectation" element={<Affectation />} />
+                <Route path="settings" element={<Navigate to="/employeesSettings" replace />} />
               </Route>
+              <Route path="/employeesSettings" element={
+                <ProtectedRoute>
+                  <EmployeesSettings />
+                </ProtectedRoute>
+              } />
+              <Route path="/financeSettings" element={
+                <ProtectedRoute>
+                  <FinanceSettings />
+                </ProtectedRoute>
+              } />
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <Profile />

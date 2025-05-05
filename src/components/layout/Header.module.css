@@ -46,6 +46,12 @@
   gap: 0.75rem;
 }
 
+.separator {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.5);
+  margin: 0.25rem 0.75rem;
+}
+
 .link {
   display: flex;
   align-items: center;
@@ -111,6 +117,12 @@
   font-size: 0.875rem;
   margin-top: auto;
   margin-bottom: 4rem;
+}
+
+.rightSlot {
+  margin-top: auto;
+  margin-bottom: 1rem;
+  padding: 0 0.75rem;
 }
 
 .logoutButton:before {
