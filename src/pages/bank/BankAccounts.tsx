@@ -6,6 +6,7 @@ import { Pencil, Trash2, Building } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../contexts/ToastContext';
 import { theme } from '../../theme';
+import { BankSettingsLayout } from '../../components/layout/bank-settings-layout';
 
 interface CompteBancaire {
   id: string;
@@ -235,21 +236,32 @@ function BankAccounts() {
 
   if (loading) {
     return (
-      <PageSection title="Comptes bancaires" description="Chargement des données..." />
+      <PageSection
+        title="Comptes bancaires"
+        description="Chargement des données..."
+      >
+        <BankSettingsLayout />
+      </PageSection>
     );
   }
 
   if (error) {
     return (
-      <PageSection title="Comptes bancaires" description={`Erreur: ${error}`} />
+      <PageSection
+        title="Comptes bancaires"
+        description={`Erreur: ${error}`}
+      >
+        <BankSettingsLayout />
+      </PageSection>
     );
   }
 
   return (
-    <PageSection
-      title="Comptes bancaires"
-      description="Gestion des comptes bancaires des restaurants"
-    >
+    <BankSettingsLayout>
+      <PageSection
+        title="Comptes bancaires"
+        description="Gestion des comptes bancaires des restaurants"
+      >
         <div style={{ marginBottom: '1rem' }}>
           <Button
             label={showForm ? "Masquer le formulaire" : "Créer un compte"}
@@ -503,7 +515,9 @@ function BankAccounts() {
             </Form>
           </PageSection>
         )}
-    </PageSection>
+      </PageSection>
+    )}
+    </BankSettingsLayout>
   );
 }
 

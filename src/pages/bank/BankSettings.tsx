@@ -1,20 +1,18 @@
 import React, { ReactNode } from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
-import { PageLayout } from '../../components/layout/page-layout';
-import { HeaderGestionBancaireParam } from '../../components/layout/HeaderGestionBancaireParam';
 
 function BankSettings() {
   const location = useLocation();
   const exactPath = location.pathname === '/bank/settings';
   
   return (
-    <PageLayout header={<HeaderGestionBancaireParam />}>
+    <>
       <Outlet />
       {/* Rediriger vers la page des formats d'importation si on est exactement sur /bank/settings */}
       {exactPath && (
         <Navigate to="/bank/settings/import-formats" replace />
       )}
-    </PageLayout>
+    </>
   );
 }
 

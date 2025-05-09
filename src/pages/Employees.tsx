@@ -1,15 +1,14 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { PageLayout } from '../components/layout/page-layout';
+import { EmployeesLayout } from '../components/layout/employees-layout';
 import { PageSection } from '../components/layout/page-layout';
-import { HeaderGestionEmployes } from '../components/layout/HeaderGestionEmployes';
 
 function Employees() {
   const location = useLocation();
   const isRootPath = location.pathname === '/employees';
   
   return (
-    <PageLayout header={<HeaderGestionEmployes />}>
+    <EmployeesLayout>
       {isRootPath ? (
         <PageSection
           title="Gestion des employés"
@@ -18,7 +17,7 @@ function Employees() {
       ) : (
         <Outlet />
       )}
-    </PageLayout>
+    </EmployeesLayout>
   );
 }
 

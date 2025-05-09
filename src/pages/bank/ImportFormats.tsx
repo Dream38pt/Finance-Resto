@@ -6,6 +6,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../../contexts/ToastContext';
 import { theme } from '../../theme';
+import { BankSettingsLayout } from '../../components/layout/bank-settings-layout';
 
 interface ImportFormat {
   id: string;
@@ -204,24 +205,28 @@ function ImportFormats() {
 
   if (loading) {
     return (
-      <PageSection
-        title="Formats d'importation"
-        description="Chargement des données..."
-      />
+      <BankSettingsLayout>
+        <PageSection
+          title="Formats d'importation"
+          description="Chargement des données..."
+        />
+      </BankSettingsLayout>
     );
   }
 
   if (error) {
     return (
-      <PageSection
-        title="Formats d'importation"
-        description={`Erreur: ${error}`}
-      />
+      <BankSettingsLayout>
+        <PageSection
+          title="Formats d'importation"
+          description={`Erreur: ${error}`}
+        />
+      </BankSettingsLayout>
     );
   }
 
   return (
-    <>
+    <BankSettingsLayout>
       <PageSection
         title="Formats d'importation"
         description="Gestion des formats d'importation des relevés bancaires"
@@ -466,7 +471,7 @@ function ImportFormats() {
           </Form>
         </PageSection>
       )}
-    </>
+    </BankSettingsLayout>
   );
 }
 

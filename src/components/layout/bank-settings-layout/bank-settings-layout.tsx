@@ -1,27 +1,25 @@
 import React, { ReactNode } from 'react';
-import { Header } from '../Header';
-import { Footer } from '../Footer';
+import { HeaderGestionBancaireParam } from '../HeaderGestionBancaireParam';
+import { useMenu } from '../../../contexts/MenuContext';
 import { ToastContainer } from '../../ui/toast';
 import { useToast } from '../../../contexts/ToastContext';
-import { useMenu } from '../../../contexts/MenuContext';
-import styles from './page-layout.module.css';
+import styles from './bank-settings-layout.module.css';
 
-interface PageLayoutProps {
+interface BankSettingsLayoutProps {
   children: ReactNode;
   className?: string;
 }
 
-export function PageLayout({ children, className = '' }: PageLayoutProps) {
+export function BankSettingsLayout({ children, className = '' }: BankSettingsLayoutProps) {
   const { isExpanded } = useMenu();
   const { toasts, closeToast } = useToast();
 
   return (
     <div className={`${styles.container} ${isExpanded ? styles.expanded : styles.collapsed} ${className}`}>
-      <Header />
-      <main className={`${styles.main}`}>
+      <HeaderGestionBancaireParam />
+      <div className={styles.main}>
         {children}
-      </main>
-      <Footer />
+      </div>
       <ToastContainer toasts={toasts} onClose={closeToast} />
     </div>
   );

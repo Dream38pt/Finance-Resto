@@ -1,13 +1,12 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { PageLayout } from '../components/layout/page-layout';
-import { HeaderGestionBancaire } from '../components/layout/HeaderGestionBancaire';
+import { BankLayout } from '../components/layout/bank-layout';
 
 function Bank() {
   return (
-    <PageLayout header={<HeaderGestionBancaire />}>
+    <BankLayout>
       <Outlet />
-    </PageLayout>
+    </BankLayout>
   );
 }
 

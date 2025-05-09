@@ -1,13 +1,12 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { PageLayout } from '../components/layout/page-layout';
-import { HeaderGestionFinanciere } from '../components/layout/HeaderGestionFinanciere';
+import { FinanceLayout } from '../components/layout/finance-layout/finance-layout';
 
 function Finance() {
   return (
-    <PageLayout header={<HeaderGestionFinanciere />}>
+    <FinanceLayout>
       <Outlet />
-    </PageLayout>
+    </FinanceLayout>
   );
 }
 

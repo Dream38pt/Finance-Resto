@@ -1,27 +1,25 @@
 import React, { ReactNode } from 'react';
-import { Header } from '../Header';
-import { Footer } from '../Footer';
+import { HeaderGestionFinanciere } from '../HeaderGestionFinanciere';
+import { useMenu } from '../../../contexts/MenuContext';
 import { ToastContainer } from '../../ui/toast';
 import { useToast } from '../../../contexts/ToastContext';
-import { useMenu } from '../../../contexts/MenuContext';
-import styles from './page-layout.module.css';
+import styles from './finance-layout.module.css';
 
-interface PageLayoutProps {
+interface FinanceLayoutProps {
   children: ReactNode;
   className?: string;
 }
 
-export function PageLayout({ children, className = '' }: PageLayoutProps) {
+export function FinanceLayout({ children, className = '' }: FinanceLayoutProps) {
   const { isExpanded } = useMenu();
   const { toasts, closeToast } = useToast();
 
   return (
     <div className={`${styles.container} ${isExpanded ? styles.expanded : styles.collapsed} ${className}`}>
-      <Header />
-      <main className={`${styles.main}`}>
+      <HeaderGestionFinanciere />
+      <main className={styles.main}>
         {children}
       </main>
-      <Footer />
       <ToastContainer toasts={toasts} onClose={closeToast} />
     </div>
   );

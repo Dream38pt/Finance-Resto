@@ -1,69 +1,105 @@
 import React from 'react';
-import { Building, Wallet, Home, Coffee, Receipt, Calendar, Truck, Tags, CreditCard, ArrowLeftRight, Upload } from 'lucide-react';
-import { Header } from './Header';
+import { Menu, Building, Wallet, ChevronLeft, ChevronRight, Home, Coffee, Receipt, Calendar, Truck, Tags, CreditCard, ArrowLeftRight, Upload, LogOut } from 'lucide-react';
+import { useMenu } from '../../contexts/MenuContext';
+import { Link, useLocation } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import { useToast } from '../../contexts/ToastContext';
+import styles from './HeaderParametres.module.css';
 
-export function HeaderParametres() {
-  const navLinks = [
-    {
-      to: "/",
-      label: "Accueil",
-      icon: <Home size={18} />,
-      separator: true
-    },
-    {
-      to: "/settings/entity",
-      label: "Entité",
-      icon: <Building size={18} />
-    },
-    {
-      to: "/settings/bank-accounts",
-      label: "Comptes Bancaires",
-      icon: <Wallet size={18} />
-    },
-    {
-      to: "/settings/bank-movement-types",
-      label: "Types mouvement Bancaire",
-      icon: <ArrowLeftRight size={18} />,
-      separator: true
-    },
-    {
-      to: "/settings/service-types",
-      label: "Type de service CA",
-      icon: <Coffee size={18} />
-    },
-    {
-      to: "/settings/tva",
-      label: "Paramètres TVA",
-      icon: <Receipt size={18} />
-    },
-    {
-      to: "/settings/payment-methods",
-      label: "Modes de paiement",
-      icon: <CreditCard size={18} />,
-      separator: true
-    },
-    {
-      to: "/settings/purchase-categories",
-      label: "Catégories de dépenses",
-      icon: <Tags size={18} />
-    },
-    {
-      to: "/settings/suppliers",
-      label: "Tiers",
-      icon: <Truck size={18} />
-    },
-    {
-      to: "/settings/days",
-      label: "Paramètres jours",
-      icon: <Calendar size={18} />,
-      separator: true
-    },
-    {
-      to: "/settings/import",
-      label: "Import",
-      icon: <Upload size={18} />
+interface HeaderParametresProps {
+  title?: string;
+}
+
+export function HeaderParametres({ title }: HeaderParametresProps) {
+  const { isExpanded, toggleMenu } = useMenu();
+  const { showToast } = useToast();
+  
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      showToast({
+        label: 'Déconnexion réussie',
+        icon: 'Check',
+        color: '#10b981'
+      });
+    } catch (error) {
+      showToast({
+        label: 'Erreur lors de la déconnexion',
+        icon: 'AlertTriangle',
+        color: '#ef4444'
+      });
     }
-  ];
-
-  return <Header title="Paramètrages" navLinks={navLinks} showLogoutButton={false} />;
+  };
+  
+  return (
+    <header className={`${styles.header} ${isExpanded ? styles.expanded : styles.collapsed}`}>
+      <div className={styles.container}>
+        <div className={styles.brand}>
+          <Menu size={24} className={styles.icon} />
+          <h1 className={styles.title}>Paramètrages</h1>
+        </div>
+        <nav className={styles.nav}>
+          <Link to="/" className={styles.link}>
+            <Home size={18} className={styles.icon} />
+            <span className={styles.linkText}>Accueil</span>
+          </Link>
+          <Link to="/settings/entity" className={styles.link}>
+            <Building size={18} className={styles.icon} />
+            <span className={styles.linkText}>Entité</span>
+          </Link>
+          <Link to="/settings/bank-accounts" className={styles.link}>
+            <Wallet size={18} className={styles.icon} />
+            <span className={styles.linkText}>Comptes Bancaires</span>
+          </Link>
+          <Link to="/settings/bank-movement-types" className={styles.link}>
+            <ArrowLeftRight size={18} className={styles.icon} />
+            <span className={styles.linkText}>Types mouvement Bancaire</span>
+          </Link>
+          <Link to="/settings/service-types" className={styles.link}>
+            <Coffee size={18} className={styles.icon} />
+            <span className={styles.linkText}>Type de service CA</span>
+          </Link>
+          <Link to="/settings/tva" className={styles.link}>
+            <Receipt size={18} className={styles.icon} />
+            <span className={styles.linkText}>Paramètres TVA</span>
+          </Link>
+          <Link to="/settings/payment-methods" className={styles.link}>
+            <CreditCard size={18} className={styles.icon} />
+            <span className={styles.linkText}>Modes de paiement</span>
+          </Link>
+          <Link to="/settings/purchase-categories" className={styles.link}>
+            <Tags size={18} className={styles.icon} />
+            <span className={styles.linkText}>Catégories de dépenses</span>
+          </Link>
+          <Link to="/settings/suppliers" className={styles.link}>
+            <Truck size={18} className={styles.icon} />
+            <span className={styles.linkText}>Tiers</span>
+          </Link>
+          <Link to="/settings/days" className={styles.link}>
+            <Calendar size={18} className={styles.icon} />
+            <span className={styles.linkText}>Paramètres jours</span>
+          </Link>
+          <Link to="/settings/import" className={styles.link}>
+            <Upload size={18} className={styles.icon} />
+            <span className={styles.linkText}>Import</span>
+          </Link>
+        </nav>
+        <button 
+          className={styles.logoutButton}
+          onClick={handleLogout}
+          aria-label="Déconnexion"
+        >
+          <LogOut size={18} className={styles.icon} />
+          <span className={styles.linkText}>Déconnexion</span>
+        </button>
+        <button 
+          className={styles.toggleButton}
+          onClick={toggleMenu}
+          aria-label={isExpanded ? "Réduire le menu" : "Étendre le menu"}
+        >
+          {isExpanded ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+        </button>
+      </div>
+    </header>
+  );
 }
